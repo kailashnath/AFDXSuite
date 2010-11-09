@@ -9,14 +9,14 @@ public class Main {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		init();
-		Configuration config = new Configuration();
+		new Configuration();
 	}
 	
-	private static void init() throws Exception {
+	private static void init() {
 
-		ApplicationLogger.info("Logger initialised successfully");
+		ApplicationLogger.getLogger().info("kailash");
 		ApplicationBinder.buildBinders();
 	}
 

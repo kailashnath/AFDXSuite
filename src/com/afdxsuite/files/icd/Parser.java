@@ -16,7 +16,7 @@ public class Parser {
 	
 	public Parser(String filename) throws FileNotFoundException {
 		try {
-			ApplicationLogger.info("Reading the ICD file from location " +
+			ApplicationLogger.getLogger().info("Reading the ICD file from location " +
 					filename);
 			iStreamReader = new InputStreamReader(
 								new FileInputStream(
@@ -25,7 +25,7 @@ public class Parser {
 		}
 		catch(FileNotFoundException ex)
 		{
-			ApplicationLogger.error("ICD file missing in the location : " +
+			ApplicationLogger.getLogger().error("ICD file missing in the location : " +
 					filename);
 			ex.printStackTrace();
 			throw ex;
@@ -56,12 +56,12 @@ public class Parser {
 			}
 		}
 		catch(IOException iex) {
-			ApplicationLogger.error("Error occured while trying to parse the" +
+			ApplicationLogger.getLogger().error("Error occured while trying to parse the" +
 					" icd file. Reason : " + iex.getMessage());
 			iex.printStackTrace();
 		}
 		finally {
-			ApplicationLogger.info("Loaded " + Container.getInputVls().size() +
+			ApplicationLogger.getLogger().info("Loaded " + Container.getInputVls().size() +
 					" input vls and " + Container.getOutputVls().size() + 
 					" output vls");
 		}
