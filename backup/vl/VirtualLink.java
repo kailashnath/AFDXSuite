@@ -1,6 +1,6 @@
 package com.afdxsuite.hardware.configuration.models.vl;
 
-public interface OutputVL {
+public interface VirtualLink {
 	public String get_port_id();
 	public void set_port_id(String portId);
 	
@@ -40,6 +40,19 @@ public interface OutputVL {
 	public  short get_sub_vl_id();
 	public  void set_sub_vl_id(short subVlId);
 	
+	// Begin : Exclusive InputVL functions
+	public boolean is_rma();
+	public void set_rma(String rma);
+	
+	public  boolean is_integration_check_active();
+	public  void set_integration_check_active(
+			String integrationCheckActive);
+	
+	public  int get_skew_max();
+	public  void set_skew_max(int skewMax);
+
+	// End : Exclusive input vl functions
+	
 	public  int get_afdx_port_id();
 	public  void set_afdx_port_id(int afdxPortId);
 	
@@ -69,8 +82,10 @@ public interface OutputVL {
 	
 	public  String get_dst_udp();
 	public  void set_dst_udp(String dstUdp);
-
+	
 	public  int get_buffer_size();
 	public  void set_buffer_size(int bufferSize);
+	
+	
 
 }

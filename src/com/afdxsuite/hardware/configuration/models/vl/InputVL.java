@@ -2,70 +2,36 @@ package com.afdxsuite.hardware.configuration.models.vl;
 
 public interface InputVL {
 
-	public String get_port_id();
-	public void set_port_id(String portId);
+	public void setPortId(int portId);
+	public int getPortId();
 	
-	public short get_port_speed();
-	public void set_port_speed(short portSpeed);
+	public void setPortMasterName(String name);
+	public String getPortMasterName();
 	
-	public short get_port_pin();
-	public void set_port_pin(short portPin);
+	public void setPortType(short type);
+	public short getPortType();
 	
-	public String get_line_emc_protection();
-	public void set_line_emc_protection(String lineEmcProtection);
+	public void setPortCharacteristic(short characteristic);
+	public short getPortCharacteristic();
 	
-	public  char get_network_id();
-	public  void set_network_id(char networkId);
+	public void setFragmentation(boolean isFragmentation);
+	public boolean getFragmentation();
 	
-	public  String get_connector_name();
-	public  void set_connector_name(String connectorName);
+	public void setTransmissionType(short type);
+	public short getTransmissionType();
 	
-	public  int get_vl_id();
-	public  void set_vl_id(int vlId);
+	public void setSrcIPAddress(String ipaddress);
+	public String getSrcIPAddress();
 	
-	public  String get_vl_name();
-	public  void set_vl_name(String vlName);
+	public void setDstIPAddress(String ipaddress);
+	public String getIPAddress();
 	
-	public  String get_network_select();
-	public  void set_network_select(String networkSelect);
-
-	public short get_bag();
-	public void set_bag(short bag);
-
-	public int get_max_frame_size();
-	public void set_max_frame_size(int maxFrameSize);
+	public void setSrcUDPAddress(int port);
+	public int getSrcUDPAddress();
 	
-	public boolean is_rma();
-	public void set_rma(String rma);
-
-	public  boolean is_integration_check_active();
-	public  void set_integration_check_active(
-			String integrationCheckActive);
+	public void setDstUDPAddress(int port);
+	public int getDstUDPAddress();
 	
-	public  int get_skew_max();
-	public  void set_skew_max(int skewMax);
-
-	public  short get_afdx_port_id();
-	public  void set_afdx_port_id(short afdxPortId);
-	
-	public  String get_port_master_name();
-	public  void set_port_master_name(String portMasterName);
-	
-	public  String get_port_type();
-	public  void set_port_type(String portType);
-	
-	public  String get_port_characteristic();
-	public  void set_port_characteristic(String portCharacteristic);
-	
-	public  boolean is_frag_allowed();
-	public  void set_frag_allowed(String fragAllowed);
-	
-	public  String get_dst_ip();
-	public  void set_dst_ip(String dstIp);
-
-	public  String get_src_udp();
-	public  void set_src_udp(String srcUdp);
-
-	public  int get_buffer_size();
-	public  void set_buffer_size(int bufferSize);
+	public void setBufferSize(int size);
+	public int getBufferSize();
 }

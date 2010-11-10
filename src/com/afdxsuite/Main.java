@@ -11,7 +11,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		init();
-		new Configuration();
+		Configuration.loadVLConfiguration();
 	}
 	
 	private static void init() {
