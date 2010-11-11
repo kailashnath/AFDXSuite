@@ -22,16 +22,8 @@ public final class ApplicationLogger {
 	}
 	
 	public static Logger getLogger() {
-		try {
-			if(logger == null)
-				init(ApplicationProperties.get("logger.properties.filename").toString());
-		}
-		catch(FileNotFoundException fex) {
-			fex.printStackTrace();
-		}
-		catch(IOException iex) {
-			iex.printStackTrace();
-		}
+		if(logger == null)
+			init(ApplicationProperties.get("logger.properties.filename").toString());
 
 		return logger;
 	}
