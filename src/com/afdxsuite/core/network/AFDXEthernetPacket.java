@@ -50,7 +50,24 @@ public class AFDXEthernetPacket {
 		((EthernetPacket)_packet.datalink).dst_mac = mac;
 	}
 	
-	public void setSequenceNumber(int sn) {
-		
+	public int getSequenceNumber() {
+		return _packet.data[_packet.len - 1];
 	}
+	
+	public int getSrcVlId() {
+		EthernetPacket ether = (EthernetPacket) _packet.datalink;
+		String src = ether.getSourceAddress();
+		String vlId = src.substring(src.length() - 5, src.length())
+						.replaceAll(":", "");
+		return Integer.parseInt(vlId, 16);
+	}
+	
+	public int getDstVlId() {
+		EthernetPacket ether = (EthernetPacket) _packet.datalink;
+		String dst = ether.getDestinationAddress();
+		String vlId = dst.substring(dst.length() - 5, dst.length())
+						.replaceAll(":", "");
+		return Integer.parseInt(vlId, 16);
+	}
+	
 }
