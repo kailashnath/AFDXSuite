@@ -1,85 +1,87 @@
 package com.afdxsuite.core.network.receiver;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import com.afdxsuite.logging.ApplicationLogger;
+import com.afdxsuite.models.VirtualLink.NETWORK;
 
 import jpcap.JpcapCaptor;
 import jpcap.NetworkInterface;
-import jpcap.PacketReceiver;
-import jpcap.packet.Packet;
 
 // singleton class
-public class Receiver extends Thread {
+public class Receiver {
+	private ReceiverThread _thread_network_A;
+	private ReceiverThread _thread_network_B;
+	private Logger _logger = ApplicationLogger.getLogger();
 
-	private JpcapCaptor _receiver_a;
-	private JpcapCaptor _receiver_b;
+	public Receiver(NETWORK network) {
+		try {
+			if(network == NETWORK.A) {
+				_logger.info("Initialising network on interface A");
+				_thread_network_A = new ReceiverThread(0);
+			}
+			else if (network == NETWORK.B) {
+				_logger.info("Initialising network on interface B");
+				_thread_network_B = new ReceiverThread(1);
+			}
+			else {
+				_logger.info("Initialising network on both interfaces A&B");
+				_thread_network_A = new ReceiverThread(0);
+				_thread_network_B = new ReceiverThread(1);
+			}
+		}
+		catch(IOException ioe) {
+			_logger.error("Failed initialising receiver. Reason : " + 
+					ioe.getMessage());
+			ioe.printStackTrace();
+		}
+	}
+	
+	public void start() {
+		if(_thread_network_A != null) {
+			_thread_network_A.start();
+		}
+		if(_thread_network_B != null) {
+			_thread_network_B.start();
+		}
+	}
+	
+	public void stop() {
+		if(_thread_network_A != null) {
+			_thread_network_A.stopReceiver();
+		}
+		if(_thread_network_B != null) {
+			_thread_network_B.stopReceiver();
+		}
+	}
+}
+
+class ReceiverThread extends Thread {
+
+	private NetworkInterface _network;
+	private JpcapCaptor _receiver;
 	private ReceiverListeners _listener;
 	private Logger _logger = ApplicationLogger.getLogger();
-	
-	public Receiver() throws IOException {
 
-		try {
-			NetworkInterface[] interfaces = JpcapCaptor.getDeviceList();
-			if(interfaces.length < 1) {
-				_logger.error("This equipment has no " + 
-						"network interfaces defined");
-			}
-	
-			_receiver_a = JpcapCaptor.openDevice(interfaces[0], 65535, true, -1);
-			_logger.info("Ethernet interface " + interfaces[0].name + 
-					" initialized");
-			if(interfaces.length > 1)
-			{
-				_receiver_b = JpcapCaptor.openDevice(interfaces[1], 65535,
-						true, 20);
-				_logger.info("Ethernet interface " + interfaces[1].name + 
-						" initialized");
-			}
-	
-			_listener = new ReceiverListeners();
-			}
-		finally {
-
-		}
+	public ReceiverThread(int network) throws ArrayIndexOutOfBoundsException,
+	IOException {
+		_network = JpcapCaptor.getDeviceList()[network];
+		_receiver = JpcapCaptor.openDevice(_network, 65535, true, -1);
+		_logger.info("Successfully opened network interface on :" + 
+				_network.name);
+		_listener = ReceiverListeners.getInstance();
 	}
 
 	public void run() {
 		_logger.info("Preparing receiver for receiving packets");
-		_receiver_a.setNonBlockingMode(true);
-		_receiver_b.setNonBlockingMode(false);
-		_receiver_a.loopPacket(-1, _listener);
-		//_receiver_b.loopPacket(-1, _listener);
-		_logger.info("Completed receiving packets");
+		_receiver.setNonBlockingMode(true);
+		_receiver.loopPacket(-1, _listener);
 	}
-	
-	public void stopReceiving() {
-		_receiver_a.breakLoop();
-		_receiver_b.breakLoop();
-		_receiver_a.close();
-	}
-}
 
-class PacketReceiverListener implements PacketReceiver {
-
-	private ArrayList<PacketReceiver> _receivers;
-
-	public PacketReceiverListener() {
-		_receivers = new ArrayList<PacketReceiver>();
-	}
-	
-	@Override
-	public void receivePacket(Packet p) {
-		System.out.println(p);
-		for(PacketReceiver rx : _receivers) {
-			rx.receivePacket(p);
-		}
-	}
-	
-	public void register(PacketReceiver rx) {
-		_receivers.add(rx);
+	public void stopReceiver() {
+		_receiver.breakLoop();
+		_receiver.close();
 	}
 }
