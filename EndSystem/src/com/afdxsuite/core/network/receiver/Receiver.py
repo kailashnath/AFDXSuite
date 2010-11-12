@@ -1,10 +1,9 @@
-from com.afdxsuite.core.network.receiver import NETWORK_A, NETWORK_B
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.airscapy import sniff
 from com.afdxsuite.core.network.receiver.Listeners import Listeners
 
 import threading
-from com.afdxsuite.core.network.scapy import Ether
+from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 
 class ThreadExit(Exception):
     def __init__(self):

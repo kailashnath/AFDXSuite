@@ -7,7 +7,7 @@ class IListener(object):
         pass
 
     def notify(self, afdxPacket):
-        print AFDXPacket(afdxPacket).getDestinedVl()
+        print AFDXPacket(afdxPacket).conf_vl
 
 class Listeners(object):
 
