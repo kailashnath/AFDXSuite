@@ -5,10 +5,7 @@ from com.afdxsuite.core.network.manager import getPRSN, setRSN,\
 class IntegrityHandler(object):
     __result = False
 
-    def __init__(self):
-        pass
-
-    def __doIntegrityCheck(self, afdxPacket):
+    def __isIntegrityValid(self, afdxPacket):
 
         rsn = afdxPacket.getFrameSequenceNumber()
         if rsn == None:
@@ -28,7 +25,7 @@ class IntegrityHandler(object):
     def doCheck(self, afdxPacket):
         self.__result = False
 
-        if not self.__doIntegrityCheck(afdxPacket):
+        if not self.__isIntegrityValid(afdxPacket):
             afdxLogger.error("The packet failed integrity check")
             return
 

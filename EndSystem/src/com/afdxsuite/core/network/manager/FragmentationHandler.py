@@ -11,10 +11,12 @@ class FragmentationHandler(object):
         pass
 
     def putPacket(self, packet):
+        """The variable packet here is an instance of AFDXPacket"""
         self.__packet = packet
         ipId = packet[IP].id
 
-        # if this condition is true, it means the packet is fragmented
+        # the below condition is true if the packet has more fragments MF
+        # and is a fragmented packet
         if packet[IP].flags == 3:
             self.__isaFragmentedPacket = True
             if self.__fragmented_packets.has_key(ipId):
@@ -22,12 +24,16 @@ class FragmentationHandler(object):
             else:
                 self.__fragmented_packets[ipId] = [packet.getRawPacket()]
 
+        # the below condition is true if the packet is the last fragment of
+        # a set of fragmented packets DF
         elif packet[IP].flags == 2:
             self.__isaFragmentedPacket = False
             if self.__fragmented_packets.has_key(ipId):
                 self.__fragmented_packets[ipId].append(packet.getRawPacket())
                 defragmented_packet = defragment(self.__fragmented_packets[ipId])
                 self.__fragmented_packets[ipId] = defragmented_packet
+
+        # the packet is a normal packet
         else:
             self.__isaFragmentedPacket = False
     
