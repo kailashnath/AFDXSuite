@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import com.afdxsuite.application.ApplicationProperties;
 import com.afdxsuite.logging.ApplicationLogger;
 import com.afdxsuite.models.VirtualLink.NETWORK;
 
@@ -58,17 +59,35 @@ public class Receiver {
 	}
 }
 
+class SourceForgeReceiver extends Thread {
+	
+	public SourceForgeReceiver(int network) {
+		
+	}
+}
+
 class ReceiverThread extends Thread {
 
 	private NetworkInterface _network;
 	private JpcapCaptor _receiver;
 	private ReceiverListeners _listener;
+	private String _filter_network_a = 
+		ApplicationProperties.get("network.filterA");
+	private String _filter_network_b = 
+		ApplicationProperties.get("network.filterB");
+
 	private Logger _logger = ApplicationLogger.getLogger();
 
 	public ReceiverThread(int network) throws ArrayIndexOutOfBoundsException,
 	IOException {
 		_network = JpcapCaptor.getDeviceList()[network];
 		_receiver = JpcapCaptor.openDevice(_network, 65535, true, -1);
+		if(network == 0) {
+			_receiver.setFilter(_filter_network_a, true);
+		}
+		else {
+			_receiver.setFilter(_filter_network_b, true);
+		}
 		_logger.info("Successfully opened network interface on :" + 
 				_network.name);
 		_listener = ReceiverListeners.getInstance();

@@ -1,29 +1,45 @@
 package com.afdxsuite.core.network;
 
+import net.sourceforge.jpcap.net.EthernetProtocol;
+
 import com.afdxsuite.application.ApplicationProperties;
+import com.afdxsuite.config.PortFactory;
+import com.afdxsuite.models.VirtualLink;
 
+import jpcap.packet.DatalinkPacket;
 import jpcap.packet.EthernetPacket;
+import jpcap.packet.IPPacket;
 import jpcap.packet.Packet;
+import jpcap.packet.UDPPacket;
 
-public class AFDXEthernetPacket {
+public class AFDXPacket {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Packet _packet;
 	private static String srcMacConstant = ApplicationProperties
 												.get("src.mac.constant")
 												.toString();
 	private static String dstMacConstant = ApplicationProperties
 												.get("dst.mac.constant")
 												.toString();
-	public AFDXEthernetPacket() {
-		_packet = new Packet();
+	private Packet _packet;
+	private VirtualLink _vl_conf;
+
+	public AFDXPacket() {
+		if(_packet == null)
+			_packet = new Packet();
 	}
 
-	public AFDXEthernetPacket(Packet packet) {
+	public AFDXPacket(Packet packet) {
+		System.out.println("Initialized");
 		_packet = packet;
+		_vl_conf = PortFactory.getInputVl(getDstVlId());
+	}
+	
+	public VirtualLink getConfigVl() {
+		return _vl_conf;
 	}
 	
 	public void setSrcVlId(int vlId) {
@@ -50,7 +66,12 @@ public class AFDXEthernetPacket {
 		((EthernetPacket)_packet.datalink).dst_mac = mac;
 	}
 	
-	public int getSequenceNumber() {
+	public short getSequenceNumber() {
+
+		for(int i =0; i < _packet.data.length; i++)
+			System.out.print(String.format("%x", _packet.data[i]) + " ");
+		EthernetPacket packet = (EthernetPacket) _packet.datalink;
+
 		return _packet.data[_packet.len - 1];
 	}
 	

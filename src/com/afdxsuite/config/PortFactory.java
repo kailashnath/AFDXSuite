@@ -28,7 +28,7 @@ public class PortFactory {
 		}
 	}
 	
-	public static VirtualLink read(int portId, PORT_CHARACTERISTIC type) {
+	private static VirtualLink get(int portId, PORT_CHARACTERISTIC type) {
 		for(AFDXPort port : inputVls) {
 			if(port.getAfdxPortId() == portId &&
 					port.getPortCharacteristic() == type)
@@ -37,17 +37,30 @@ public class PortFactory {
 		return null;
 	}
 	
+	private static VirtualLink get(int vlId, DIRECTION direction) {
+		if(direction == DIRECTION.INPUT)
+			for(VirtualLink link : inputVls) {
+				if(link.getVlId() == vlId)
+					return link;
+			}
+		else
+			for(VirtualLink link : outputVls) {
+				if(link.getVlId() == vlId)
+					return link;
+			}
+		return null;
+	}
 
 	public static void WRITE(int afdxPortId, String payload, int payloadLength) {
 		
 	}
 	
 	public static AFDXPort READ_Sampling(int samplingPortId) {
-		return (AFDXPort) read(samplingPortId, PORT_CHARACTERISTIC.SAMPLING);
+		return (AFDXPort) get(samplingPortId, PORT_CHARACTERISTIC.SAMPLING);
 	}
 	
 	public static InputVl READ_Queuing(int queuingPortId) {
-		return (InputVl) read(queuingPortId, PORT_CHARACTERISTIC.QUEUING);
+		return (InputVl) get(queuingPortId, PORT_CHARACTERISTIC.QUEUING);
 	}
 	
 	public static int getVlCount(DIRECTION vlDirection) {
@@ -57,5 +70,13 @@ public class PortFactory {
 			return outputVls.size();
 		else
 			return inputVls.size() + outputVls.size();
+	}
+	
+	public static VirtualLink getInputVl(int vlId) {
+		return (InputVl) get(vlId, DIRECTION.INPUT);
+	}
+	
+	public static VirtualLink getOutputVl(int vlId) {
+		return (InputVl) get(vlId, DIRECTION.OUTPUT);
 	}
 }

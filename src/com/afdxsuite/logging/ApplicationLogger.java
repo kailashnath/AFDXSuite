@@ -1,8 +1,5 @@
 package com.afdxsuite.logging;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
