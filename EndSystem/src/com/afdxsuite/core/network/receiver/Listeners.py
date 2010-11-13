@@ -1,6 +1,7 @@
 from com.afdxsuite.models.AFDXPacket import AFDXPacket
+from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 
-LISTENERS_LIST = []
+LISTENERS_DICT = {NETWORK_A : list(), NETWORK_B : list()}
 
 class IListener(object):
     def __init__(self):
@@ -15,21 +16,22 @@ class Listeners(object):
         pass
 
     @staticmethod
-    def registerListener(listener):
-        print 'registering the listener'
+    def registerListener(listener, network):
+
         if isinstance(listener, IListener):
-            global LISTENERS_LIST
-            LISTENERS_LIST.append(listener)
+            global LISTENERS_DICT
+            LISTENERS_DICT[network].append(listener)
 
     @staticmethod
-    def deregisterListener(listener):
+    def deregisterListener(listener, network):
         if isinstance(listener, IListener):
-            global LISTENERS_LIST
-            LISTENERS_LIST.remove(listener)
+            global LISTENERS_DICT
+            LISTENERS_DICT[network].remove(listener)
 
-    def notifyListeners(self, packet):
-        global LISTENERS_LIST
-        listeners = LISTENERS_LIST
+    def notifyListeners(self, packet, network):
+        global LISTENERS_DICT
+        listeners = LISTENERS_DICT[network]
+
         for listener in listeners:
             listener.notify(packet)
     

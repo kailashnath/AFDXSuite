@@ -1,9 +1,14 @@
 from com.afdxsuite.logging import afdxLogger
-from com.afdxsuite.core.network.manager import getPRSN, setRSN,\
-    getNextSequenceNumber, SEQUENCE_FRAME
+from com.afdxsuite.core.network.manager import SEQUENCE_FRAME
+from com.afdxsuite.core.network.manager.SequenceHandler import SequenceHandler
+from com.afdxsuite.core.network.scapy import IP
 
 class IntegrityHandler(object):
     __result = False
+    __sequence_handler = None
+    
+    def __init__(self):
+        self.__sequence_handler = SequenceHandler()
 
     def __isIntegrityValid(self, afdxPacket):
 
@@ -12,21 +17,25 @@ class IntegrityHandler(object):
             return False
 
         vl  = afdxPacket.getDestinedVl()
-        prsn = getPRSN(vl)
-        prsn_next_1 = getNextSequenceNumber(prsn, SEQUENCE_FRAME)
-        prsn_next_2 = getNextSequenceNumber(prsn_next_1, SEQUENCE_FRAME)
-
+        prsn = self.__sequence_handler.getPRSN(vl)
+        prsn_next_1 = self.__sequence_handler.getNextSequenceNumber(prsn,
+                                                                 SEQUENCE_FRAME)
+        prsn_next_2 = self.__sequence_handler.getNextSequenceNumber(prsn_next_1,
+                                                                 SEQUENCE_FRAME)
+        #print "RSN : %s, PRSN : %s" % (rsn, prsn)
         if (rsn in (prsn_next_1, prsn_next_2)) or \
             (rsn == 0 and prsn != 0) or \
             (prsn == -1):
-            setRSN(vl, rsn)
+            self.__sequence_handler.setRSN(vl, rsn)
             return True
 
     def doCheck(self, afdxPacket):
         self.__result = False
 
         if not self.__isIntegrityValid(afdxPacket):
-            afdxLogger.error("The packet failed integrity check")
+            print "Integrity check failed for packet if ip id", \
+             afdxPacket[IP].id
+            #afdxLogger.error("The packet failed integrity check")
             return
 
         self.__result = True

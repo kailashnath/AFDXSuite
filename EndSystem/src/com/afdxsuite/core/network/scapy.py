@@ -680,6 +680,7 @@ if BIG_ENDIAN:
         return s & 0xffff
 else:
     def checksum(pkt):
+
         if len(pkt) % 2 == 1:
             pkt += "\0"
         s = sum(array.array("H", pkt))

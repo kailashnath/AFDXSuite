@@ -1,5 +1,9 @@
 from com.afdxsuite.config.parsers import ICD_OUTPUT_VL, ICD_INPUT_VL, ICD_ICMP
 
+PORT_SAMPLING = 'sampling'
+PORT_QUEUING  = 'queuing'
+PORT_SAP      = 'sap'
+
 def intORnull(x):
     if x:
         return int(x)
@@ -22,6 +26,7 @@ class ICDPARSER(object):
 
                 i += 1
         else:
+            print 'invalid'
             self.valid = False
 
 class ICD_AFDX_OUTPUT_VL(ICDPARSER):
@@ -37,10 +42,6 @@ class ICD_AFDX_OUTPUT_VL(ICDPARSER):
     def __init__(self, data = None):
         super(ICD_AFDX_OUTPUT_VL, self).__init__(data)
 
-    def get_port_name(self):
-        return 'afdx_output_vl'
-
-
 class ICD_AFDX_INPUT_VL(ICDPARSER):
 
     columns = ("phys_port_id", "phys_port_speed", "pin_name", "afdx_emc_prot", "network_id", "connector_name",
@@ -55,10 +56,6 @@ class ICD_AFDX_INPUT_VL(ICDPARSER):
     def __init__(self, data = None):
         super(ICD_AFDX_INPUT_VL, self).__init__(data)
 
-    def get_port_name(self):
-        return 'afdx_input_vl'
-
-
 class ICD_AFDX_ICMP(ICDPARSER):
     columns = ("dest_ip", 'reply_vl_id', 'reply_sub_vl_id', 'reply_vl_network_select',
                'reply_vl_bag', 'reply_vl_mfs', 'reply_vl_buffersize', 'rx_vl_id', 
@@ -70,17 +67,20 @@ class ICD_AFDX_ICMP(ICDPARSER):
 
     def __init__(self, data = None):
         super(ICD_AFDX_ICMP, self).__init__(data)
+        setattr(self, 'max_frame_size', getattr(self, 'reply_vl_mfs'))
 
 
-CONFIG_ENTRIES = {ICD_OUTPUT_VL : ICD_AFDX_OUTPUT_VL,
-                   ICD_INPUT_VL : ICD_AFDX_INPUT_VL,
-                   ICD_ICMP : ICD_AFDX_ICMP}
+CONFIG_ENTRIES = {ICD_OUTPUT_VL : list(),
+                  ICD_INPUT_VL  : list(),
+                  ICD_ICMP      : list()}
 
 
 def parseICD(filename):
     global CONFIG_ENTRIES
 
-    mapping = CONFIG_ENTRIES
+    mapping = {ICD_OUTPUT_VL : ICD_AFDX_OUTPUT_VL,
+               ICD_INPUT_VL  : ICD_AFDX_INPUT_VL,
+               ICD_ICMP      : ICD_AFDX_ICMP}
     obj_dict = {ICD_OUTPUT_VL: [],
                 ICD_INPUT_VL : [],
                 ICD_ICMP : []}
@@ -105,4 +105,3 @@ def parseICD(filename):
                 obj_dict[mapping_key].append(p)
 
     CONFIG_ENTRIES = obj_dict
-

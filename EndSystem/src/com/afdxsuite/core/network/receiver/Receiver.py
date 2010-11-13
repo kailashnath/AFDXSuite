@@ -4,6 +4,7 @@ from com.afdxsuite.core.network.receiver.Listeners import Listeners
 
 import threading
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
+from com.afdxsuite.core.network.scapy import Ether, IP
 
 class ThreadExit(Exception):
     def __init__(self):
@@ -13,9 +14,11 @@ class ThreadExit(Exception):
 class ReceiverThread(threading.Thread):
 
     __stop = False
+    __network = None
 
-    def __init__(self, iface):
-        self.__iface = iface
+    def __init__(self, network):
+        self.__network = network
+        self.__iface   = get("NETWORK_INTERFACE_" + network)
         self.listeners = Listeners()
         super(ReceiverThread, self).__init__()
 
@@ -23,15 +26,20 @@ class ReceiverThread(threading.Thread):
         if self.__stop:
             raise ThreadExit()
 
-        self.listeners.notifyListeners(packet)
+        self.listeners.notifyListeners(packet, self.__network)
 
     def run(self):
         try:
-            sniff(iface = self.__iface, prn = self.callback,
-                  filter = get("RECEIVER_NETWORK_FILTER"), store = 0)
-        except ThreadExit:
-            print 'Receiver stopped'
-            pass
+            filter_text = get("RECEIVER_NETWORK_FILTER_" + self.__network)
+
+            while True:
+                sniff(iface = self.__iface, prn = self.callback,
+                      filter = filter_text,
+                      store = 0, timeout = 10)
+
+                if self.__stop:
+                    break
+        except ThreadExit: pass
         except Exception, ex:
             print ex
 
@@ -47,10 +55,10 @@ class Receiver(object):
     def __init__(self, network):
         
         if NETWORK_A in network:
-            self.__network_A = ReceiverThread(get("NETWORK_INTERFACE_A"))
+            self.__network_A = ReceiverThread(NETWORK_A)
 
         if NETWORK_B in network:
-            self.__network_B = ReceiverThread(get("NETWORK_INTERFACE_B"))
+            self.__network_B = ReceiverThread(NETWORK_B)
 
     def start(self):
         if self.__network_A != None:
