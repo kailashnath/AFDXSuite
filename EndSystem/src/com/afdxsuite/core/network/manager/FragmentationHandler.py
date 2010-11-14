@@ -99,3 +99,11 @@ class FragmentationHandler(object):
                 return AFDXPacket(self.__fragmented_packets.pop(ipId)[0])
             else:
                 return self.__packet
+
+    def reset(self):
+        self.__fragmented_packets.clear()
+        self.__udpPorts = list()
+        self.__packet = None
+        self.__fragmented = False
+        self.__isPacketValid = False
+        self.__isaFragmentedPacket = False

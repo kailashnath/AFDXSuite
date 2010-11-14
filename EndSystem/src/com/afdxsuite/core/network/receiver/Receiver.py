@@ -41,7 +41,7 @@ class ReceiverThread(threading.Thread):
                     break
         except ThreadExit: pass
         except Exception, ex:
-            print ex
+            print 'Failed', str(ex)
 
     def kill(self):
         self.__stop = True
@@ -71,3 +71,6 @@ class Receiver(object):
             self.__network_A.kill()
         if self.__network_B != None:
             self.__network_B.kill()
+
+    def reset(self):
+        pass

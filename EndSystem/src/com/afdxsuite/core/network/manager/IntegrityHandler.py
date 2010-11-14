@@ -22,18 +22,18 @@ class IntegrityHandler(object):
                                                                  SEQUENCE_FRAME)
         prsn_next_2 = self.__sequence_handler.getNextSequenceNumber(prsn_next_1,
                                                                  SEQUENCE_FRAME)
-        #print "RSN : %s, PRSN : %s" % (rsn, prsn)
         if (rsn in (prsn_next_1, prsn_next_2)) or \
             (rsn == 0 and prsn != 0) or \
             (prsn == -1):
             self.__sequence_handler.setRSN(vl, rsn)
             return True
+        return False
 
     def doCheck(self, afdxPacket):
         self.__result = False
 
         if not self.__isIntegrityValid(afdxPacket):
-            print "Integrity check failed for packet if ip id", \
+            print "Integrity check failed for packet with ip id", \
              afdxPacket[IP].id
             #afdxLogger.error("The packet failed integrity check")
             return
@@ -43,3 +43,6 @@ class IntegrityHandler(object):
 
     def getResult(self):
         return self.__result
+
+    def reset(self):
+        self.__sequence_handler = SequenceHandler()

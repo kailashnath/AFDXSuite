@@ -1,16 +1,17 @@
-from com.afdxsuite.config.Factory import READ_Queuing
-from com.afdxsuite.application.AFDXListener import AFDXListener
+from com.afdxsuite.config.Factory import READ_Queuing, WRITE
 from com.afdxsuite.core.network.manager.IntegrityHandler import IntegrityHandler
 from com.afdxsuite.core.network.manager.FragmentationHandler import FragmentationHandler
 from com.afdxsuite.core.network.manager.RedundancyHandler import RedundancyHandler
-from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A, NETWORK_B
+from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 from com.afdxsuite.core.network.receiver.Listeners import Listeners
+from com.afdxsuite.application.handlers import COMMAND_HANDLERS
 
 class CommandResponderApp(object):
     __receiver    = None
     __transmitter = None
     __listener    = None
     __network     = None
+    listeners     = list()
 
     def __init__(self, transmitter, receiver_class,
                  listener_class, network):
@@ -18,7 +19,6 @@ class CommandResponderApp(object):
         self.__receiver    = receiver_class(network)
         self.__listener    = listener_class
         self.__network     = network
-        self.listeners     = list()
         self.__wire()
 
     def __wire(self):
@@ -47,7 +47,27 @@ class CommandResponderApp(object):
             self.activeInstance.stop()
 
     def notify(self, portId):
-        payload, payload_len = READ_Queuing(portId)
-        print payload_len
-        self.__transmitter.write(portId, payload)
-        self.__transmitter.transmit(self.__network)
+        payload = READ_Queuing(portId)
+        if payload == None:
+            return
+        for command_name in COMMAND_HANDLERS.keys():
+            if command_name in payload:
+                handler = COMMAND_HANDLERS[command_name]
+                handler = handler(payload, application = self, 
+                                  parent_portId = portId)
+
+                handler.execute()
+
+                response = handler.getResponse()
+                port = WRITE(portId, response)
+                self.__transmitter.transmit(port, self.__network)
+
+    def transmit(self, port):
+        self.__transmitter.transmit(port, self.__network)
+
+    def reset(self):
+        self.__transmitter.reset()
+        self.__receiver.reset()
+        self.__listener.reset()
+        for listener in self.listeners:
+            listener.reset()

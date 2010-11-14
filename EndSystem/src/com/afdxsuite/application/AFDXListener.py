@@ -6,6 +6,8 @@ from com.afdxsuite.core.network.scapy import UDP, Raw, IP
 from com.afdxsuite.core.network.manager.PacketChecker import PacketChecker
 from com.afdxsuite.core.network import NETWORK_A
 
+import traceback, sys
+
 class AFDXListener(IListener):
 
     __integrity_handler     = None
@@ -35,28 +37,34 @@ class AFDXListener(IListener):
     def notify(self, afdxPacket):
         self.__packet = AFDXPacket(afdxPacket)
         conf = self.__packet.conf_vl
-
-        if conf != None:
-            if not self.__check():
-                return
-            if conf.ic_active ==  True:
-                self.__notifyIntegrityHandler()
-
-            if conf.rma == True and self._integrity_check_result:
-                self.__notifyRedundancyHandler()
-
-            if self._integrity_check_result and self._redundancy_check_result:
-                self.__notifyFragmentationHandler()
-                
-                # packet will be made either None or value depending upon
-                # the return value from the Fragmentation handler
-                if self.__packet == None:
-                    print 'none'
+        try:
+            if conf != None:
+                if not self.__check():
+                    return
+                if conf.ic_active ==  True:
+                    self.__notifyIntegrityHandler()
+                else:
+                    return
+    
+                if conf.rma == True and self._integrity_check_result:
+                    self.__notifyRedundancyHandler()
+                else:
                     return
 
-                # after both successful the system should go forward
-                Factory.put_processed_packet(self.__packet)
-                self.__application.notify(conf.RX_AFDX_port_id)
+                if self._integrity_check_result and self._redundancy_check_result:
+                    self.__notifyFragmentationHandler()
+
+                    # packet will be made either None or value depending upon
+                    # the return value from the Fragmentation handler
+                    if self.__packet == None:
+                        return
+    
+                    # after both successful the system should go forward
+                    Factory.put_processed_packet(self.__packet)
+                    self.__application.notify(conf.RX_AFDX_port_id)
+        except Exception, ex:
+            print "--------------", str(ex)
+            traceback.print_exc(file = sys.stdout)
 
     def registerIntegrityHandler(self, handler):
         self.__integrity_handler = handler

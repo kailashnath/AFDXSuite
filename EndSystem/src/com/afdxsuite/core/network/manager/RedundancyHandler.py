@@ -8,10 +8,10 @@ class RedundancyHandler(object):
 
     __result = False
     __sequence_handler = None
+    _accepted_sns = dict()
 
     def __init__(self):
         self.__sequence_handler = SequenceHandler()
-        self._accepted_sns = dict()
 
     def __addAcceptedSN(self, vlId, sn):
 
@@ -69,3 +69,8 @@ class RedundancyHandler(object):
 
     def getResult(self):
         return self.__result
+
+    def reset(self):
+        self.__sequence_handler = SequenceHandler()
+        self._accepted_sns.clear()
+        self.__result = False

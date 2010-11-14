@@ -4,7 +4,6 @@ from com.afdxsuite.config import Factory
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB
 
 class AFDXPacket(object):
-    __write_payload = None
     __packet = None
     conf_vl = None
 
@@ -37,7 +36,7 @@ class AFDXPacket(object):
         return payload
 
     def setPayload(self, payload):
-        self.__write_payload = payload
+        self.__packet[Raw].load = payload
 
     def getRawPacket(self):
         return self.__packet

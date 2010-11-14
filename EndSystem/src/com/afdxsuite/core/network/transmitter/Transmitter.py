@@ -29,8 +29,8 @@ class Transmitter(object):
         ip_layer = IP()
         ip_layer.src = port.ip_src
         ip_layer.dst = port.ip_dst
-        ip_layer.id  = self._sn_handler.getNextIpId()
-        #ip_layer.prot = 0x17
+        #ip_layer.id  = self._sn_handler.getNextIpId()
+        ip_layer.prot = 0x17
         self.__packet = self.__packet/ip_layer
 
     def __addUDPDetails(self):
@@ -76,17 +76,18 @@ class Transmitter(object):
     def __createPacket(self):
         if self.__port == None:
             return
+        if (not hasattr(self.__port, 'payload')) or self.__port.payload == None:
+            return
         self.__addEthernetDetails()
         self.__addIpDetails()
         self.__addUDPDetails()
         self.__addPayload()
         self.__normalize()
 
-    def write(self, afdxPortId, payload):
-        self.__port = Factory.WRITE(afdxPortId, payload)
+    def transmit(self, port, network):
+        self.__port = port
         self.__createPacket()
 
-    def transmit(self, network):
         for packet in self.__packet:
             packet = self.__addPadding(packet)
             if NETWORK_A in network:
@@ -97,3 +98,5 @@ class Transmitter(object):
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
                 sendp(packet, iface = get("NETWORK_INTERFACE_B"),
                       verbose = False)
+    def reset(self):
+        pass

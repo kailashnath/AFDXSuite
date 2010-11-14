@@ -57,3 +57,8 @@ class SequenceHandler(object):
         self.__current_ip_id = self.getNextSequenceNumber(self.__current_ip_id,
                                                           type)
         return self.__current_ip_id
+
+    def reset(self):
+        self.PASN.clear()
+        self.PRSN.clear()
+        self.RFSN.clear()

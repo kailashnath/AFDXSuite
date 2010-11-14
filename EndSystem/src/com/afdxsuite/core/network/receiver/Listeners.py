@@ -1,4 +1,3 @@
-from com.afdxsuite.models.AFDXPacket import AFDXPacket
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 
 LISTENERS_DICT = {NETWORK_A : list(), NETWORK_B : list()}
@@ -8,7 +7,7 @@ class IListener(object):
         pass
 
     def notify(self, afdxPacket):
-        print AFDXPacket(afdxPacket).conf_vl
+        raise Exception("Method not implemented")
 
 class Listeners(object):
 
@@ -34,4 +33,3 @@ class Listeners(object):
 
         for listener in listeners:
             listener.notify(packet)
-    
