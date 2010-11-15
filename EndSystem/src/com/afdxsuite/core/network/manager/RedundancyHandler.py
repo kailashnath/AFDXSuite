@@ -72,6 +72,5 @@ class RedundancyHandler(object):
         return self.__result
 
     def reset(self):
-        self.__sequence_handler = SequenceHandler()
         self._accepted_sns.clear()
         self.__result = False

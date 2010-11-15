@@ -12,4 +12,4 @@ if __name__ == '__main__':
                                       listener_class = AFDXListener, 
                                       network = NETWORK_AB)
     application.activate()
-    #application.deactivate()
+    #application.deactivate()11

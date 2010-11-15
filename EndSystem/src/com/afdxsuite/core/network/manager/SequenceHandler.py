@@ -50,7 +50,7 @@ class SequenceHandler(object):
         if self.RFSN.has_key(vlId):
             sn = self.RFSN[vlId]
 
-        self.RFSN[vlId] = self.getNextSequenceNumber(sn, SEQUENCE_IP)
+        self.RFSN[vlId] = self.getNextSequenceNumber(sn, SEQUENCE_FRAME)
         return sn
 
     def getNextIpId(self):
