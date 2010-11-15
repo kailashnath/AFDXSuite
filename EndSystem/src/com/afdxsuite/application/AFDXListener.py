@@ -70,7 +70,6 @@ class AFDXListener(IListener):
                     if conf == None or not self.__check():
                         return
 
-                    print 'Adding ++++++++', self.__packet.conf_vl
                     # after both successful the system should go forward
                     Factory.put_processed_packet(self.__packet)
                     self.__application.notify(conf.RX_AFDX_port_id)
@@ -111,4 +110,3 @@ class AFDXListener(IListener):
         if (self.__fragmentation_handler != None):
             self.__fragmentation_handler.putPacket(self.__packet)
             self.__packet = self.__fragmentation_handler.getPacket()
-            print 'packet is', self.__packet

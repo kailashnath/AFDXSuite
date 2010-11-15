@@ -1,5 +1,4 @@
-from com.afdxsuite.core.network.scapy import Ether, Padding, Raw, IP, UDP,\
-    wireshark
+from com.afdxsuite.core.network.scapy import Ether, Padding, Raw, IP, UDP
 from com.afdxsuite.logging import afdxLogger
 from com.afdxsuite.config import Factory
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB

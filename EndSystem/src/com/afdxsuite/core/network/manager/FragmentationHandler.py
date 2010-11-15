@@ -1,4 +1,5 @@
-from com.afdxsuite.core.network.scapy import IP, defragment, UDP, wireshark
+from com.afdxsuite.core.network.scapy import IP, defragment, UDP, wireshark,\
+    Ether
 from com.afdxsuite.models.AFDXPacket import AFDXPacket
 from com.afdxsuite.core.network.snmp.SNMP import SNMP
 from com.afdxsuite.core.network.snmp import SNMP_IP_MIB_CODE, SNMP_FRAG_MIB_CODE
@@ -24,7 +25,7 @@ class FragmentationHandler(object):
                     return False
         return True
         if (packet[IP].dst != packet.conf_vl.ip_dst):
-            print packet[IP].dst, packet.conf_vl.ip_dst
+
             SNMP.incrementMIB(SNMP_FRAG_MIB_CODE)
             return False
 
@@ -52,9 +53,9 @@ class FragmentationHandler(object):
 
     def putPacket(self, packet):
         """The variable packet here is an instance of AFDXPacket"""
-        self.__packet = packet
         ipId = packet[IP].id
-        print 'Flag : ---------', packet[IP].flags, packet[IP].id
+        packet[Ether].src = packet[Ether].src[:-2] + "20"
+        self.__packet = packet
 
         if not self.__basicChecks(self.__packet):
 
@@ -65,7 +66,7 @@ class FragmentationHandler(object):
         # and is a fragmented packet
         if packet[IP].flags == 1:
             self.__isaFragmentedPacket = True
-            print 'fragment of packet', ipId
+
             # if the fragment is the first fragment
             if (packet[IP].frag << 3) == 0:
                 if self.__fragmented_packets.has_key(ipId):
@@ -95,13 +96,14 @@ class FragmentationHandler(object):
 
         # the packet is a normal packet
         else:
-            print self.__fragmented_packets.has_key(ipId)
+
             self.__isaFragmentedPacket = False
             if self.__fragmented_packets.has_key(ipId):
                 
                 self.__fragmented_packets[ipId].append(packet.getRawPacket())
                 defragmented_packet = \
                     defragment(self.__fragmented_packets[ipId])
+
                 if self.__checkDefragmentedPacket(defragmented_packet[0]):
                     self.__isPacketValid = True
                 self.__fragmented_packets[ipId] = defragmented_packet

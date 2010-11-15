@@ -58,7 +58,15 @@ class SequenceHandler(object):
                                                           type)
         return self.__current_ip_id
 
-    def reset(self):
-        self.PASN.clear()
-        self.PRSN.clear()
-        self.RFSN.clear()
+    def reset(self, vlId = None):
+        if vlId == None:
+            self.PASN.clear()
+            self.PRSN.clear()
+            self.RFSN.clear()
+        else:
+            if self.PASN.has_key(vlId):
+                self.PASN[vlId] = -1
+            if self.PRSN.has_key(vlId):
+                self.PRSN[vlId] = -1
+
+        print "Sequence handler is reset"

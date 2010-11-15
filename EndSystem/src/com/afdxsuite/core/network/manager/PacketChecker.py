@@ -32,6 +32,7 @@ class PacketChecker(object):
         # ip layer checks
         if ip.version != 4 or ip.ihl != 5 or ip.proto not in (1, 17) or \
         ip.chksum == 0:
+            print 'Ip check failed for packet with id', ip.id
             SNMP.incrementMIB(SNMP_IP_MIB_CODE)
             return False
 

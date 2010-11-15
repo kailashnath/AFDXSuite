@@ -22,9 +22,8 @@ class IntegrityHandler(object):
                                                                  SEQUENCE_FRAME)
         prsn_next_2 = self.__sequence_handler.getNextSequenceNumber(prsn_next_1,
                                                                  SEQUENCE_FRAME)
-        if (rsn in (prsn_next_1, prsn_next_2)) or \
-            (rsn == 0 and prsn != 0) or \
-            (prsn == -1):
+        if (rsn in (prsn_next_1, prsn_next_2)) or (prsn == -1) or \
+        (rsn == 0 and prsn != 0):
             self.__sequence_handler.setRSN(vl, rsn)
             return True
         return False

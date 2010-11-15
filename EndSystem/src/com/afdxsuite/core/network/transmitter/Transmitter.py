@@ -90,7 +90,9 @@ class Transmitter(object):
     def transmit(self, port, network):
         self.__port = port
         self.__createPacket()
-
+        
+        # to be removed, only for testing redundancy management
+        network = 'A'
         for packet in self.__packet:
             packet = self.__addPadding(packet)
 

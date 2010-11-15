@@ -29,7 +29,15 @@ def __get_port(portId, type):
     port_attr_name = "tx_AFDX_port_id" if type == ICD_OUTPUT_VL \
                                         else "RX_AFDX_port_id"
     for entry in entries:
+
         if getattr(entry, port_attr_name) == portId:
+            return entry
+    return None
+
+def __get_sap_port(sapSrcPort, type):
+    entries = CONFIG_ENTRIES[type]
+    for entry in entries:
+        if entry.udp_src == sapSrcPort:
             return entry
     return None
 
@@ -66,12 +74,13 @@ def WRITE(afdxPortId, payload):
     __set_port(port, afdxPortId, ICD_OUTPUT_VL)
     return port
 
-def WRITE_Sap(sapPortId, payload, ipDest, udpDest):
-    port = __get_port(sapPortId, ICD_OUTPUT_VL)
+def WRITE_Sap(sapSrcPort, payload, ipDest, udpDest):
+    port = __get_sap_port(sapSrcPort, ICD_OUTPUT_VL)
+
     setattr(port, 'payload', payload)
     port.ip_dst = ipDest
     port.udp_dst = udpDest
-    __set_port(port, sapPortId, ICD_OUTPUT_VL)
+    __set_port(port, port.tx_AFDX_port_id, ICD_OUTPUT_VL)
     return port
 
 def READ(portId):

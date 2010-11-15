@@ -16,9 +16,9 @@ class Command(object):
             port = self.__command[self.comport_index : self.comport_index + 2]
             return h2i(port)
 
-    def getSapport(self):
+    def getSapSrcport(self):
         if hasattr(self, 'sapport_index'):
-            port = self.__command[self.comport_index : self.comport_index + 2]
+            port = self.__command[self.sapport_index : self.sapport_index + 2]
             return h2i(port)
 
 class ReactionQueue(object):
