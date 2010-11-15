@@ -1,4 +1,4 @@
-from com.afdxsuite.core.network.scapy import IP, defragment, UDP
+from com.afdxsuite.core.network.scapy import IP, defragment, UDP, wireshark
 from com.afdxsuite.models.AFDXPacket import AFDXPacket
 from com.afdxsuite.core.network.snmp.SNMP import SNMP
 from com.afdxsuite.core.network.snmp import SNMP_IP_MIB_CODE, SNMP_FRAG_MIB_CODE
@@ -41,9 +41,12 @@ class FragmentationHandler(object):
 
     def __checkDefragmentedPacket(self, packet):
         offset_val     = packet[IP].frag << 3
-        payload_length = packet[IP].len
-        if (offset_val + payload_length) != (packet[UDP].len - 8):
+        payload_length = packet[IP].len - 20
+
+        if payload_length != packet[UDP].len:
             SNMP.incrementMIB(SNMP_IP_MIB_CODE)
+            print offset_val, payload_length, packet[UDP].len
+            print 'failed at checking defragmented packet'
             return False
         return True
 
@@ -51,6 +54,7 @@ class FragmentationHandler(object):
         """The variable packet here is an instance of AFDXPacket"""
         self.__packet = packet
         ipId = packet[IP].id
+        print 'Flag : ---------', packet[IP].flags, packet[IP].id
 
         if not self.__basicChecks(self.__packet):
 
@@ -59,12 +63,15 @@ class FragmentationHandler(object):
 
         # the below condition is true if the packet has more fragments MF
         # and is a fragmented packet
-        if packet[IP].flags == 3:
+        if packet[IP].flags == 1:
             self.__isaFragmentedPacket = True
-
+            print 'fragment of packet', ipId
             # if the fragment is the first fragment
             if (packet[IP].frag << 3) == 0:
-                self.__fragmented_packets[ipId] = list(packet.getRawPacket())
+                if self.__fragmented_packets.has_key(ipId):
+                    self.__fragmented_packets[ipId].append(packet.getRawPacket())
+                else:
+                    self.__fragmented_packets[ipId] = list(packet.getRawPacket())
                 return
 
             if(self.__checkFragmentedPacket(packet)):
@@ -75,6 +82,7 @@ class FragmentationHandler(object):
         # the below condition is true if the packet is the last fragment of
         # a set of fragmented packets DF
         elif packet[IP].flags == 2:
+            print 'last fragment'
             self.__isaFragmentedPacket = False
             if self.__fragmented_packets.has_key(ipId):
                 self.__fragmented_packets[ipId].append(packet.getRawPacket())
@@ -87,7 +95,16 @@ class FragmentationHandler(object):
 
         # the packet is a normal packet
         else:
+            print self.__fragmented_packets.has_key(ipId)
             self.__isaFragmentedPacket = False
+            if self.__fragmented_packets.has_key(ipId):
+                
+                self.__fragmented_packets[ipId].append(packet.getRawPacket())
+                defragmented_packet = \
+                    defragment(self.__fragmented_packets[ipId])
+                if self.__checkDefragmentedPacket(defragmented_packet[0]):
+                    self.__isPacketValid = True
+                self.__fragmented_packets[ipId] = defragmented_packet
             self.__isPacketValid = True
 
     def getPacket(self):
@@ -96,7 +113,7 @@ class FragmentationHandler(object):
         if not self.__isaFragmentedPacket and self.__isPacketValid:
 
             if self.__fragmented_packets.has_key(ipId):
-                return AFDXPacket(self.__fragmented_packets.pop(ipId)[0])
+                return self.__fragmented_packets.pop(ipId)[0]
             else:
                 return self.__packet
 

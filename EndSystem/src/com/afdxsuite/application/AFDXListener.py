@@ -37,28 +37,40 @@ class AFDXListener(IListener):
     def notify(self, afdxPacket):
         self.__packet = AFDXPacket(afdxPacket)
         conf = self.__packet.conf_vl
+
         try:
-            if conf != None:
-                if not self.__check():
-                    return
-                if conf.ic_active ==  True:
+
+            if self.__packet != None:
+
+                # removing the condition "conf.ic_active ==  True" and 
+                # "conf.rma == True" as for a fragmented packet the conf 
+                # will be None as AFDXPacket class cannot find UDP layer
+                # in a fragmented packet
+                if  self.__packet != None:
                     self.__notifyIntegrityHandler()
                 else:
                     return
-    
-                if conf.rma == True and self._integrity_check_result:
+
+                if self._integrity_check_result:
                     self.__notifyRedundancyHandler()
                 else:
                     return
 
-                if self._integrity_check_result and self._redundancy_check_result:
+                if self._integrity_check_result and \
+                self._redundancy_check_result:
                     self.__notifyFragmentationHandler()
-
                     # packet will be made either None or value depending upon
                     # the return value from the Fragmentation handler
                     if self.__packet == None:
                         return
-    
+                    else:
+                        self.__packet = AFDXPacket(self.__packet)
+                        conf = self.__packet.conf_vl
+
+                    if conf == None or not self.__check():
+                        return
+
+                    print 'Adding ++++++++', self.__packet.conf_vl
                     # after both successful the system should go forward
                     Factory.put_processed_packet(self.__packet)
                     self.__application.notify(conf.RX_AFDX_port_id)
@@ -99,3 +111,4 @@ class AFDXListener(IListener):
         if (self.__fragmentation_handler != None):
             self.__fragmentation_handler.putPacket(self.__packet)
             self.__packet = self.__fragmentation_handler.getPacket()
+            print 'packet is', self.__packet

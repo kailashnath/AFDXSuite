@@ -3,15 +3,25 @@ from com.afdxsuite.config.parsers.icdparser import CONFIG_ENTRIES, PORT_SAMPLING
 
 PROCESSED_PORTS = {}
 
-def __get_vl(vlId, type):
+def __get_vl(vlId, dst_ip = None, dst_udp = None, port_id = None,
+             type = ICD_INPUT_VL):
 
     entries = CONFIG_ENTRIES[type]
     for entry in entries:
         if type != ICD_ICMP:
-            if entry.vl_id == vlId:
-                return entry
-        else:
-            
+
+            if entry.vl_id == vlId: 
+                if port_id == None:
+#                    print entry.ip_dst, dst_ip, entry.udp_dst, dst_udp
+                    if entry.ip_dst == dst_ip \
+                        and entry.udp_dst == dst_udp:
+                        return entry
+                else:
+                    if type == ICD_INPUT_VL and entry.RX_AFDX_port_id == port_id:
+                        return entry
+                    elif entry.tx_AFDX_port_id == port_id:
+                        return entry
+    return None
 
 def __get_port(portId, type):
 
@@ -82,14 +92,15 @@ def READ_Sampling(samplingPortId):
 def READ_Queuing(queuingPortId):
     return READ(queuingPortId)
 
-def GET_InputVl(vlId):
-    return __get_vl(vlId, ICD_INPUT_VL)
+def GET_InputVl(vlId, dst_ip, dst_udp):
+    return __get_vl(vlId, dst_ip = dst_ip, dst_udp = int(dst_udp), 
+                    type = ICD_INPUT_VL)
 
-def GET_ICMPVl(vlId):
+def GET_ICMPVl(vlId, ip_dst, udp_dst):
     return __get_vl(vlId, ICD_ICMP)
 
-def GET_OutputVl(vlId):
-    return __get_vl(vlId, ICD_OUTPUT_VL)
+def GET_OutputVl(vlId, afdxPortId):
+    return __get_vl(vlId, port_id = int(afdxPortId), type = ICD_OUTPUT_VL)
 
 def GET_Port_Input(portId):
     return __get_port(portId, ICD_INPUT_VL)
