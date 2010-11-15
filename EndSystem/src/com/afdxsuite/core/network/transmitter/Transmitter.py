@@ -4,7 +4,7 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 from com.afdxsuite.models.AFDXPacket import AFDXPacket
 from com.afdxsuite.core.network.scapy import Ether, IP, UDP, fragment, sendp,\
-    Raw, Padding
+    Raw, Padding, wireshark
 
 class Transmitter(object):
 
@@ -35,6 +35,7 @@ class Transmitter(object):
 
     def __addUDPDetails(self):
         port = self.__port
+
         udp_layer = UDP()
         udp_layer.sport = port.udp_src
         udp_layer.dport = port.udp_dst
@@ -48,8 +49,10 @@ class Transmitter(object):
     def __normalize(self):
         port = self.__port
 
-        if len(port.payload) > port.buffer_size:
-            self.__packet = fragment(self.__packet, port.max_frame_size)
+        # any payload size greater than 1472 needs to be fragmented
+        # as the its the ethernet limitation
+        if len(port.payload) > 1472 or len(port.payload) > port.max_frame_size:
+            self.__packet = self.fragment(self.__packet)
         else:
             self.__packet = [self.__packet]
 
@@ -87,9 +90,12 @@ class Transmitter(object):
     def transmit(self, port, network):
         self.__port = port
         self.__createPacket()
-
+        
+        # to be removed, only for testing redundancy management
+        network = 'A'
         for packet in self.__packet:
             packet = self.__addPadding(packet)
+
             if NETWORK_A in network:
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
                 sendp(packet, iface = get("NETWORK_INTERFACE_A"),
@@ -100,3 +106,11 @@ class Transmitter(object):
                       verbose = False)
     def reset(self):
         pass
+    
+    def fragment(self, packet):
+        max_frame_size = 1472 if self.__port.max_frame_size > 1472 else \
+        self.__port.max_frame_size 
+        if max_frame_size < len(packet[Raw].load):
+            return fragment(packet, max_frame_size)
+        else:
+            return [packet]
