@@ -47,8 +47,9 @@ class RedundancyHandler(object):
         # sn's then the packet is a redundant packet, hence reject else
         # accept and proceed forward
         acceptable_asn = self.__getLatestAcceptedSNs(vlId)
-
+        #print pasn, rsn, acceptable_asn, vlId, rsn in acceptable_asn
         if (pasn == -1) or (rsn not in acceptable_asn):
+            #print 'accepted'
             self.__sequence_handler.setASN(vlId, rsn)
             self.__addAcceptedSN(vlId, rsn)
             return True
@@ -71,6 +72,5 @@ class RedundancyHandler(object):
         return self.__result
 
     def reset(self):
-        self.__sequence_handler = SequenceHandler()
         self._accepted_sns.clear()
         self.__result = False

@@ -1,7 +1,7 @@
 from com.afdxsuite.logging import afdxLogger
 from com.afdxsuite.core.network.manager import SEQUENCE_FRAME
 from com.afdxsuite.core.network.manager.SequenceHandler import SequenceHandler
-from com.afdxsuite.core.network.scapy import IP
+from com.afdxsuite.core.network.scapy import IP, wireshark, Ether
 
 class IntegrityHandler(object):
     __result = False
@@ -16,16 +16,16 @@ class IntegrityHandler(object):
         if rsn == None:
             return False
 
-        vl  = afdxPacket.getDestinedVl()
-        prsn = self.__sequence_handler.getPRSN(vl)
+        vlId  = afdxPacket.getDestinedVl()
+        prsn = self.__sequence_handler.getPRSN(vlId)
         prsn_next_1 = self.__sequence_handler.getNextSequenceNumber(prsn,
                                                                  SEQUENCE_FRAME)
         prsn_next_2 = self.__sequence_handler.getNextSequenceNumber(prsn_next_1,
                                                                  SEQUENCE_FRAME)
-        if (rsn in (prsn_next_1, prsn_next_2)) or \
-            (rsn == 0 and prsn != 0) or \
-            (prsn == -1):
-            self.__sequence_handler.setRSN(vl, rsn)
+
+        if (rsn in (prsn_next_1, prsn_next_2)) or (prsn == -1) or \
+        (rsn == 0 and prsn != 0):
+            self.__sequence_handler.setRSN(vlId, rsn)
             return True
         return False
 
@@ -33,6 +33,9 @@ class IntegrityHandler(object):
         self.__result = False
 
         if not self.__isIntegrityValid(afdxPacket):
+            if afdxPacket[IP] == None:
+                if isinstance(afdxPacket, Ether):
+                    wireshark(afdxPacket)
             print "Integrity check failed for packet with ip id", \
              afdxPacket[IP].id
             #afdxLogger.error("The packet failed integrity check")

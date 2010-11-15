@@ -32,6 +32,7 @@ class PacketChecker(object):
         # ip layer checks
         if ip.version != 4 or ip.ihl != 5 or ip.proto not in (1, 17) or \
         ip.chksum == 0:
+            print 'Ip check failed for packet with id', ip.id
             SNMP.incrementMIB(SNMP_IP_MIB_CODE)
             return False
 
@@ -49,12 +50,14 @@ class PacketChecker(object):
 
             if port.port_characteristic == PORT_SAMPLING:
                 if (packet[UDP].len - 8) != port.buffer_size:
-                    print 'Data size != buffer size'
+                    print 'Data size != buffer size for packet with Id',\
+                    packet[IP].id
                     SNMP.incrementMIB(SNMP_UDP_MIB_CODE)
                     return False
             else:
-                if (packet[UDP].len -8) > port.buffer_size:
-                    print 'Data size > buffer size'
+                if (packet[UDP].len - 8) > port.buffer_size:
+                    print 'Data size > buffer size for packet with Id', \
+                    packet[IP].id, packet[UDP].len, port.buffer_size
                     SNMP.incrementMIB(SNMP_UDP_MIB_CODE)
                     return False
         return True

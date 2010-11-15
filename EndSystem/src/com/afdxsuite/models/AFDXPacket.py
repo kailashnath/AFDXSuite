@@ -1,4 +1,4 @@
-from com.afdxsuite.core.network.scapy import Ether, Padding, Raw
+from com.afdxsuite.core.network.scapy import Ether, Padding, Raw, IP, UDP
 from com.afdxsuite.logging import afdxLogger
 from com.afdxsuite.config import Factory
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB
@@ -10,7 +10,10 @@ class AFDXPacket(object):
     def __init__(self, packet = None, port = None):
         if packet != None:
             self.__packet = packet
-            self.conf_vl = Factory.GET_InputVl(self.getDestinedVl())
+            if packet[UDP] == None:
+                return
+            self.conf_vl = Factory.GET_InputVl(self.getDestinedVl(), \
+                                packet[IP].dst, packet[UDP].dport)
         if port != None:
             self.conf_vl = port
 
