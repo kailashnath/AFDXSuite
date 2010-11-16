@@ -5,8 +5,10 @@ from com.afdxsuite.config import Factory
 from com.afdxsuite.core.network.scapy import UDP, Raw, IP
 from com.afdxsuite.core.network.manager.PacketChecker import PacketChecker
 from com.afdxsuite.core.network import NETWORK_A
+from com.afdxsuite.core.network.hooks import *
 
 import traceback, sys
+from com.afdxsuite.application.properties import get
 
 class AFDXListener(IListener):
 
@@ -16,11 +18,19 @@ class AFDXListener(IListener):
     __application           = None
     __packet                = None
     __network               = None
+    __hooks                 = None
 
     def __init__(self, network):
         self._integrity_check_result  = False
         self._redundancy_check_result = False
         self.__network = network
+        self.__hooks = eval(get("HOOKS"))
+        if self.__hooks == None or type(self.__hooks) != dict:
+            self.__hooks = dict()
+        else:
+            for key in self.__hooks.keys():
+                target = self.__hooks[key]
+                self.__hooks[key] = target
 
     def __check(self):
         if self.__packet != None:
@@ -72,6 +82,11 @@ class AFDXListener(IListener):
 
                     # after both successful the system should go forward
                     Factory.put_processed_packet(self.__packet)
+                    for port in self.__hooks.keys():
+                        if port == self.__packet[UDP].dport:
+                            self.__hooks[port](self.__application, 
+                                               self.__packet)
+                            return
                     self.__application.notify(conf.RX_AFDX_port_id)
         except Exception, ex:
             print "--------------", str(ex)

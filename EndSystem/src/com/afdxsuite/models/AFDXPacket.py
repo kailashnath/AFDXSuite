@@ -20,6 +20,9 @@ class AFDXPacket(object):
     def __getitem__(self, item):
         return self.__packet[item]
 
+    def __len__(self):
+        return len(self.__packet)
+
     def getDestinedVl(self):
         dst_mac = self.__packet[Ether].dst
         vl_id = (str(dst_mac)[-5:]).replace(':', '')

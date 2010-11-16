@@ -1,8 +1,8 @@
 from com.afdxsuite.core.network.scapy import IP, defragment, UDP, wireshark,\
     Ether
 from com.afdxsuite.models.AFDXPacket import AFDXPacket
-from com.afdxsuite.core.network.snmp.SNMP import SNMP
-from com.afdxsuite.core.network.snmp import SNMP_IP_MIB_CODE, SNMP_FRAG_MIB_CODE
+from com.afdxsuite.core.network.hooks.snmp.SNMP import SNMP
+from com.afdxsuite.core.network.hooks.snmp import SNMP_IP_MIB_CODE, SNMP_FRAG_MIB_CODE
 from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING
 
 class FragmentationHandler(object):
