@@ -1,18 +1,14 @@
-from com.afdxsuite.core.network.manager.SequenceHandler import SequenceHandler
-from com.afdxsuite.config import Factory
-from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
-from com.afdxsuite.models.AFDXPacket import AFDXPacket
-from com.afdxsuite.core.network.scapy import Ether, IP, UDP, fragment, sendp,\
-    Raw, Padding, wireshark
-import time
+from com.afdxsuite.core.network.scapy import Ether, sendp, IP, UDP, Raw, ICMP,\
+    SNMP, Padding, fragment
+from com.afdxsuite.application.properties import get
+from com.afdxsuite.core.network.utils import SequenceHandler
 
-class Transmitter(object):
+class TransmitHandler(object):
+    __network = None
 
-    __port = None
-    __packet = None
-
-    def __init__(self):
+    def __init__(self, network):
+        self.__network = network
         self._sn_handler = SequenceHandler()
 
     def __addEthernetDetails(self):
@@ -28,17 +24,19 @@ class Transmitter(object):
     def __addIpDetails(self):
         port = self.__port
         ip_layer = IP()
-        ip_layer.src = port.ip_src
+        ip_layer.src = port.ip_src if hasattr(port, 'ip_src') else \
+            get("TE_IP_" + self.__network)
         ip_layer.dst = port.ip_dst
-        #ip_layer.id  = self._sn_handler.getNextIpId()
-        ip_layer.prot = 0x17
+        ip_layer.id  = self._sn_handler.nextIpId()
+        #ip_layer.prot = 0x17
         self.__packet = self.__packet/ip_layer
 
     def __addUDPDetails(self):
         port = self.__port
 
         udp_layer = UDP()
-        udp_layer.sport = port.udp_src
+        udp_layer.sport = port.udp_src if hasattr(port, 'udp_src') else \
+        int(get("TE_UDP"))
         udp_layer.dport = port.udp_dst
         udp_layer.chksum = 0x00
         #udp_layer.len    = len(port.payload)
@@ -58,7 +56,10 @@ class Transmitter(object):
             self.__packet = [self.__packet]
 
     def __addPadding(self, packet):
-        payload_length = len(packet[Raw].load)
+        if packet[SNMP] != None:
+            payload_length = packet[UDP].len - 8
+        else:
+            payload_length = len(packet[Raw])
 
         padding = ''
         # the size index 17 is caculated as 60 - (ethHdr + ipHdr + udpHdr) = 18
@@ -68,7 +69,7 @@ class Transmitter(object):
         if payload_length < 17:
             padding = '\0' * (17 - payload_length)
 
-        sn = self._sn_handler.getNextFrameSequenceNumber(self.__port.vl_id)
+        sn = self._sn_handler.next(self.__port.vl_id)
         if sn == 0:
             padding += '\0'
         else:
@@ -88,12 +89,13 @@ class Transmitter(object):
         self.__addPayload()
         self.__normalize()
 
-    def transmit(self, port, network):
+    def transmit(self, port, network = None):
         self.__port = port
         self.__createPacket()
-        time.sleep(0.5)
-        # to be removed, only for testing redundancy management
-        network = 'A'
+
+        if network == None:
+            network = self.__network
+
         for packet in self.__packet:
             packet = self.__addPadding(packet)
 
@@ -105,9 +107,7 @@ class Transmitter(object):
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
                 sendp(packet, iface = get("NETWORK_INTERFACE_B"),
                       verbose = False)
-    def reset(self):
-        pass
-    
+
     def fragment(self, packet):
         max_frame_size = 1472 if self.__port.max_frame_size > 1472 else \
         self.__port.max_frame_size 

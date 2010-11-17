@@ -10,6 +10,6 @@ if __name__ == '__main__':
 
     application = CommandResponderApp(Transmitter, receiver_class = Receiver,
                                       listener_class = AFDXListener, 
-                                      network = NETWORK_AB)
+                                      network = NETWORK_A)
     application.activate()
     #application.deactivate()11
