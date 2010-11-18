@@ -66,7 +66,6 @@ class SNMP(object):
         else:
             _varbindlist = [SNMPvarbind(oid = ASN1_OID(self.__getOID()),
                                         value = 1)]
-        
 
         response = scapy.SNMP(community = "afdxRead",
                                PDU = SNMPresponse(varbindlist = _varbindlist))
@@ -75,7 +74,6 @@ class SNMP(object):
         port.ip_dst = self.__command[IP].src
         port.udp_dst = self.__destinationPort
         self.__application.transmit(port)
-
 
     @staticmethod
     def incrementMIB(trapCode):
