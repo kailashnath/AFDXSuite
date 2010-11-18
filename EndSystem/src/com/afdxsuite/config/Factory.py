@@ -30,7 +30,7 @@ def __get_port(portId, type):
                                         else "RX_AFDX_port_id"
     for entry in entries:
 
-        if getattr(entry, port_attr_name) == portId:
+        if str(getattr(entry, port_attr_name)) == str(portId):
             return entry
     return None
 
@@ -70,8 +70,9 @@ def put_processed_packet(afdxPacket):
 
 def WRITE(afdxPortId, payload):
     port = __get_port(afdxPortId, ICD_OUTPUT_VL)
-    setattr(port, 'payload', payload)
-    __set_port(port, afdxPortId, ICD_OUTPUT_VL)
+    if port != None:
+        setattr(port, 'payload', payload)
+        __set_port(port, afdxPortId, ICD_OUTPUT_VL)
     return port
 
 def WRITE_Sap(sapSrcPort, payload, ipDest, udpDest):

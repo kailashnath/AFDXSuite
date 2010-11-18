@@ -86,14 +86,14 @@ class Transmitter(object):
             return
         self.__addEthernetDetails()
         self.__addIpDetails()
-        print type(self.__port.payload)
+
         if not isinstance(self.__port.payload, SNMPresponse):
-            print 'skipping udp'
             self.__addUDPDetails()
         self.__addPayload()
         self.__normalize()
 
     def transmit(self, port, network):
+        print port
         self.__port = port
         self.__createPacket()
         time.sleep(0.5)

@@ -40,10 +40,11 @@ class ReactionQueue(object):
         self.__queue = list()
 
     def transmit(self, count):
-        for i in range(0, count):
-            print 'Sending contents of reaction queue %d time' % i
-            for command in self.__queue:
+        for command in self.__queue:
+            loop = count
+            while loop > 0:
                 command.tcrq_send()
+                loop -= 1
         return True
 
 class SequenceHandler(object):

@@ -25,6 +25,8 @@ class IntegrityHandler(object):
 
         if (rsn in (prsn_next_1, prsn_next_2)) or (prsn == -1) or \
         (rsn == 0 and prsn != 0):
+            if (rsn == 0 and prsn != 0):
+                self.__sequence_handler.setASN(vlId, 0)
             self.__sequence_handler.setRSN(vlId, rsn)
             return True
         return False
@@ -33,11 +35,9 @@ class IntegrityHandler(object):
         self.__result = False
 
         if not self.__isIntegrityValid(afdxPacket):
-            if afdxPacket[IP] == None:
-                if isinstance(afdxPacket, Ether):
-                    wireshark(afdxPacket)
-            print "Integrity check failed for packet with ip id", \
-             afdxPacket[IP].id
+            if afdxPacket[IP] != None:
+                print "Integrity check failed for packet with ip id", \
+                        afdxPacket[IP].id
             #afdxLogger.error("The packet failed integrity check")
             return
 

@@ -24,7 +24,6 @@ class EIPC(Command):
         self.__text = payload[13:]
 
     def __sendOnPort(self):
-        try:
             portId = self.getComport()
             response = "%(tesn)s%(trsn)sEIPC%(comport)s%(type)s%(text)s" % \
             {'tesn' : i2h("%04X" % self.getTESN()),
@@ -35,8 +34,6 @@ class EIPC(Command):
             port = WRITE(portId, response.decode('string_escape'))
             self.__application.transmit(port)
             return True
-        except:
-            return False
 
     def execute(self):
         action_status = False
@@ -56,4 +53,5 @@ class EIPC(Command):
          'tesn' : i2h("%04X" % self.getTESN()),
          'com_port' : i2h(self.getComport()),
          'response' : self.__response}
+
         return response.decode('string_escape')

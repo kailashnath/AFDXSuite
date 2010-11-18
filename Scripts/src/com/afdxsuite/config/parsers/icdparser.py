@@ -1,8 +1,8 @@
 from com.afdxsuite.config.parsers import ICD_OUTPUT_VL, ICD_INPUT_VL, ICD_ICMP
 
-PORT_SAMPLING = 'sampling'
-PORT_QUEUING  = 'queuing'
-PORT_SAP      = 'sap'
+PORT_SAMPLING = 'Sampling'
+PORT_QUEUING  = 'Queuing'
+PORT_SAP      = 'SAP'
 
 def intORnull(x):
     if x:
