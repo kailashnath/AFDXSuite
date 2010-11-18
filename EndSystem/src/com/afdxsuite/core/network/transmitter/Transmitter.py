@@ -7,6 +7,8 @@ from com.afdxsuite.core.network.scapy import Ether, IP, UDP, fragment, sendp,\
     Raw, Padding, SNMPresponse
 from com.afdxsuite.core.network.hooks.snmp.SNMP import SNMP
 
+import time
+
 class Transmitter(object):
 
     __port = None
@@ -94,7 +96,7 @@ class Transmitter(object):
     def transmit(self, port, network):
         self.__port = port
         self.__createPacket()
-        
+        time.sleep(0.5)
         # to be removed, only for testing redundancy management
         network = 'A'
         for packet in self.__packet:
