@@ -4,8 +4,7 @@ from com.afdxsuite.application.utilities import i2h
 class RSET(Command):
     __application = None
 
-    def __init__(self, application, port):
-        self.__application = application
+    def __init__(self):
         super(RSET, self).__init__()
 
     def buildCommand(self):

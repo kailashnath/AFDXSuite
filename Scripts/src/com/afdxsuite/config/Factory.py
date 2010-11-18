@@ -131,7 +131,10 @@ def GET_Ports(filter, type):
     ports = list()
 
     for entry in entries:
-        if filter(entry):
+        if filter!= None:
+            if filter(entry):
+                ports.append(entry)
+        else:
             ports.append(entry)
 
     return ports

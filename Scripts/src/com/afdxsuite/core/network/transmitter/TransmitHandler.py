@@ -25,7 +25,7 @@ class TransmitHandler(object):
         port = self.__port
         ip_layer = IP()
         ip_layer.src = port.ip_src if hasattr(port, 'ip_src') else \
-            get("TE_IP_" + self.__network)
+            get("TE_IP")
         ip_layer.dst = port.ip_dst
         ip_layer.id  = self._sn_handler.nextIpId()
         #ip_layer.prot = 0x17
@@ -95,15 +95,17 @@ class TransmitHandler(object):
 
         if network == None:
             network = self.__network
-
+        print NETWORK_A in network, NETWORK_B in network, network
         for packet in self.__packet:
             packet = self.__addPadding(packet)
 
             if NETWORK_A in network:
+                print 'sending on A'
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
                 sendp(packet, iface = get("NETWORK_INTERFACE_A"),
                       verbose = False)
             if NETWORK_B in network:
+                print 'sending on B'
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
                 sendp(packet, iface = get("NETWORK_INTERFACE_B"),
                       verbose = False)

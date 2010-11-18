@@ -4,7 +4,9 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 from com.afdxsuite.models.AFDXPacket import AFDXPacket
 from com.afdxsuite.core.network.scapy import Ether, IP, UDP, fragment, sendp,\
-    Raw, Padding, wireshark
+    Raw, Padding, SNMPresponse
+from com.afdxsuite.core.network.hooks.snmp.SNMP import SNMP
+
 import time
 
 class Transmitter(object):
@@ -31,7 +33,7 @@ class Transmitter(object):
         ip_layer.src = port.ip_src
         ip_layer.dst = port.ip_dst
         #ip_layer.id  = self._sn_handler.getNextIpId()
-        ip_layer.prot = 0x17
+        #ip_layer.prot = 0x17
         self.__packet = self.__packet/ip_layer
 
     def __addUDPDetails(self):
@@ -58,15 +60,15 @@ class Transmitter(object):
             self.__packet = [self.__packet]
 
     def __addPadding(self, packet):
-        payload_length = len(packet[Raw].load)
+        payload_length = len(packet)
 
         padding = ''
         # the size index 17 is caculated as 60 - (ethHdr + ipHdr + udpHdr) = 18
         # but here we are using the size index as 17 because the last bit will
         # be the sequence number which will be added at 'transmit' function
 
-        if payload_length < 17:
-            padding = '\0' * (17 - payload_length)
+        if payload_length < 59:
+            padding = '\0' * (59 - payload_length)
 
         sn = self._sn_handler.getNextFrameSequenceNumber(self.__port.vl_id)
         if sn == 0:
@@ -84,11 +86,14 @@ class Transmitter(object):
             return
         self.__addEthernetDetails()
         self.__addIpDetails()
-        self.__addUDPDetails()
+
+        if not isinstance(self.__port.payload, SNMPresponse):
+            self.__addUDPDetails()
         self.__addPayload()
         self.__normalize()
 
     def transmit(self, port, network):
+        print port
         self.__port = port
         self.__createPacket()
         time.sleep(0.5)
@@ -110,8 +115,11 @@ class Transmitter(object):
     
     def fragment(self, packet):
         max_frame_size = 1472 if self.__port.max_frame_size > 1472 else \
-        self.__port.max_frame_size 
-        if max_frame_size < len(packet[Raw].load):
+        self.__port.max_frame_size
+        # we aren't using packet[UDP].len because if the packet is a SNMP
+        # packet, the length we are getting is None !!. Hence this workaroud
+        payload_length = len(packet[UDP]) - 8
+        if max_frame_size < payload_length:
             return fragment(packet, max_frame_size)
         else:
             return [packet]
