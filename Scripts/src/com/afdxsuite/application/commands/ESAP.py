@@ -15,7 +15,7 @@ class ESAP(Command):
         port = self.port
         command = "%(tesn)sESAP%(sapsrcport)s%(command)s%(commandtype)s"\
                         "%(message)s%(teip)s%(udpdst)s" % \
-                        {'tesn' : self.getTESN(),
+                        {'tesn' : i2h("%04X" %self.getTESN()),
                          'sapsrcport' : i2h("%04X" % port.udp_src),
                          'command' : command,
                          'commandtype' : messagetype,
