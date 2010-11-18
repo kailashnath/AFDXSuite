@@ -7,11 +7,12 @@ from com.afdxsuite.scripts.Script003 import Script003
 from com.afdxsuite.scripts.Script004 import Script004
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB
 from com.afdxsuite.scripts.Script005 import Script005
+from com.afdxsuite.scripts.Script006 import Script006
 
 if __name__ == '__main__':
     application = Application(NETWORK_AB)
     application.boot()
-    script = Script005(application)
+    script = Script006(application)
     script.run()
     script.stop()
     print 'script stopped'

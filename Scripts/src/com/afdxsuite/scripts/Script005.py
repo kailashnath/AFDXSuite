@@ -42,6 +42,6 @@ class Script005(Script):
             for message in messages:
                 command = cmd.buildCommand(command = 'SEND', message = message)
                 self.send(command, Factory.GET_TX_Port())
-                continue
+
                 if not pollForResponse(("OK", "ERR")):
                     self.logger.info("The ES did not respond to the command")

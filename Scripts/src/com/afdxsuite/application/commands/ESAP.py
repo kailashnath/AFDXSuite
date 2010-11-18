@@ -6,8 +6,7 @@ class ESAP(Command):
     port = None
     command_size = 19
 
-    def __init__(self, application, port):
-        self.__application = application
+    def __init__(self, port):
         self.port = port
         super(ESAP, self).__init__()
 

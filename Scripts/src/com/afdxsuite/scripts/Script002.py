@@ -17,6 +17,7 @@ class Script002(Script):
                                           'port_characteristic' : \
                                           [PORT_SAMPLING, PORT_QUEUING]},
                                          ICD_INPUT_VL)
+        self.input_ports = self.remove_common_ports(self.input_ports)
 
     def __fillRxPorts(self, ports):
 
@@ -33,9 +34,7 @@ class Script002(Script):
         self.__fillRxPorts(self.input_ports)
 
         for port in self.input_ports:
-            if port.udp_dst == int(get("TE_UDP")):
-                continue
-            rrpc = RRPC(self.application, port)
+            rrpc = RRPC(port)
             self.logger.info("Sending RRPC for port = %s" % \
                              port.RX_AFDX_port_id)
             self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
@@ -71,7 +70,7 @@ class Script002(Script):
                 self.__fillRxPorts(sel_ports)
 
                 for port in sel_ports:
-                    rrpc = RRPC(self.application, port)
+                    rrpc = RRPC(port)
                     self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
 
                     if not pollForResponse("RRPC"):
