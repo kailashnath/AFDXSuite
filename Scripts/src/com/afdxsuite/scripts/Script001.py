@@ -23,7 +23,7 @@ class Script001(Script):
     def run(self):
         self.sendRSET()
         for port in self.ports:
-            eipc = EIPC(self.application, port)
+            eipc = EIPC(port)
             message = "PortId = %s" % port.tx_AFDX_port_id
             command = eipc.buildCommand(message = message)
 

@@ -22,7 +22,7 @@ class Script003(Script):
         self.logger.info("Starting the sequence 1")
         self.sendRSET()
         for port in self.output_ports:
-            eipc = EIPC(self.application, port)
+            eipc = EIPC(port)
             message = "Port Id = %s" % port.tx_AFDX_port_id
             offset_size = eipc.command_size
             command = eipc.buildCommand(command = 'HOLD', 

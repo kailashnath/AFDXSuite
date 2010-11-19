@@ -75,7 +75,11 @@ class Script(object):
     def remove_common_ports(self, ports):
         filtered_ports = []
         for port in ports:
-            if port.udp_src == int(get("TE_UDP")):
+            if hasattr(port, 'udp_src'):
+                val = port.udp_src
+            elif hasattr(port, 'udp_dst'):
+                val = port.udp_dst
+            if val == int(get("TE_UDP")):
                 continue
             filtered_ports.append(port)
         return filtered_ports

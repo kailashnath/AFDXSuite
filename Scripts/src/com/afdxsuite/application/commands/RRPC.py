@@ -2,10 +2,8 @@ from com.afdxsuite.application.commands import Command
 from com.afdxsuite.application.utilities import i2h
 
 class RRPC(Command):
-    __application = None
+    def __init__(self, port):
 
-    def __init__(self, application, port):
-        self.__application = application
         self.port = port
         super(RRPC, self).__init__()
 

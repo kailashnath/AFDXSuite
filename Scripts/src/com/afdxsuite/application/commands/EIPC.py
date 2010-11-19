@@ -2,11 +2,10 @@ from com.afdxsuite.application.commands import Command
 from com.afdxsuite.application.utilities import i2h
 
 class EIPC(Command):
-    __application = None
+
     port = None
     command_size = 13
-    def __init__(self, application, port):
-        self.__application = application
+    def __init__(self, port):
         self.port = port
         super(EIPC, self).__init__()
 
