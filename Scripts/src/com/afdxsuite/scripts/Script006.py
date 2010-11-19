@@ -1,6 +1,7 @@
 from com.afdxsuite.scripts import Script
-from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB
-from com.afdxsuite.config.parsers import ICD_OUTPUT_VL, ICD_INPUT_VL
+from com.afdxsuite.core.network import NETWORK_AB
+
+from com.afdxsuite.config.parsers import ICD_INPUT_VL
 from com.afdxsuite.application.commands.RRPC import RRPC
 from com.afdxsuite.application.utilities import buildShortMessage,\
     pollForResponse, buildBigMessage
