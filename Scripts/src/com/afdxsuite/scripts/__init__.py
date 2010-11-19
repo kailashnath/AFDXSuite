@@ -2,20 +2,32 @@ from com.afdxsuite.core.network.receiver.Receiver import IReceiver, Receiver
 from com.afdxsuite.core.network.scapy import PcapWriter
 from com.afdxsuite.application import CAPTURES_PARENT_DIRECTORY,\
     LOGGER_PARENT_DIRECTORY
-import os
 from com.afdxsuite.logger import Logger, general_logger
 from com.afdxsuite.config import Factory
 from com.afdxsuite.application.commands.RSET import RSET
 from com.afdxsuite.application.utilities import pollForResponse
 from com.afdxsuite.application.properties import get
 
+import os
+from com.afdxsuite.core.network import NETWORK_AB
+
 class ScriptReceiver(IReceiver):
     __writer = None
     __filter = None
+    __scriptName = None
 
     def __init__(self, scriptName):
+        self.__scriptName = scriptName
+
+    def start(self, seqno = 0):
+        filename = self.__scriptName
+        if seqno > 0:
+            filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
+        if self.__writer != None:
+            self.stop()
         self.__writer = PcapWriter(CAPTURES_PARENT_DIRECTORY + "/" + \
-                                   scriptName + ".cap")
+                                   filename)
+
     def notify(self, packet):
         if self.__filter != None:
             if not self.__filter(packet):
@@ -27,7 +39,9 @@ class ScriptReceiver(IReceiver):
         self.__filter = filterfunc
 
     def stop(self):
-        self.__writer.close()
+        if self.__writer != None:
+            self.__writer.close()
+            self.__writer = None
 
 class Script(object):
     __receiver = None
@@ -35,13 +49,20 @@ class Script(object):
     logger = general_logger
     network  = 'A'
 
-    def __init__(self, name):
+    def __init__(self, name, has_sequences = False):
         self.logger = \
         Logger(LOGGER_PARENT_DIRECTORY, logger_name = name).script_logger
         self.logger.info("Intialising the script " + name)
         self.__receiver = ScriptReceiver(name)
+
+        if not has_sequences:
+            self.__receiver.start()
+
         self.__scriptName = name
-        Receiver.register(self.__receiver, self.network)
+        Receiver.register(self.__receiver, NETWORK_AB)
+
+    def captureForSequence(self, seqNo):
+        self.__receiver.start(seqNo)
 
     def getPorts(self, filter, port_type):
         result_ports = []
@@ -79,7 +100,7 @@ class Script(object):
                 val = port.udp_src
             elif hasattr(port, 'udp_dst'):
                 val = port.udp_dst
-            if val == int(get("TE_UDP")):
+            if val in (int(get("TE_UDP")), int(get("TE_SNMP"))):
                 continue
             filtered_ports.append(port)
         return filtered_ports
@@ -102,4 +123,4 @@ class Script(object):
 
     def stop(self):
         self.logger.info("Stopping the script " + self.__scriptName)
-        #self.__receiver.stop()
+        self.__receiver.stop()

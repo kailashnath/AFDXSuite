@@ -35,7 +35,7 @@ class ICD_AFDX_OUTPUT_VL(ICDPARSER):
                "tx_AFDX_port_id", "AFDX_port_master_name", "AFDX_port_type", "port_characteristic",
                "ip_frag_allowed", "AFDX_unicast", "ip_src", "ip_dst", "udp_src", "udp_dst", "buffer_size")
 
-    columns_filters = { 2:int, 7:int, 10:int, 11:int, 12:int, 13:int, 14:int, 18:lambda x:x.lower=="yes",
+    columns_filters = { 2:int, 7:int, 10:int, 11:int, 12:int, 13:int, 14:int, 18:lambda x:x.strip().lower()=="yes",
                        19:lambda x:x.lower()=="unicast", 22:int, 23:intORnull, 24:int, }
     
     port_name = ICD_OUTPUT_VL

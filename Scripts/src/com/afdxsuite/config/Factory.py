@@ -28,10 +28,13 @@ def __get_vl(vlId, dst_ip = None, dst_udp = None, port_id = None,
 def __get_port(portId, type):
 
     entries = CONFIG_ENTRIES[type]
-    port_attr_name = "tx_AFDX_port_id" if type == ICD_OUTPUT_VL \
-                                        else "RX_AFDX_port_id"
-    for entry in entries:
+    if type != ICD_ICMP:
+        port_attr_name = "tx_AFDX_port_id" if type == ICD_OUTPUT_VL \
+                                            else "RX_AFDX_port_id"
+    else:
+        port_attr_name = "rx_vl_id"
 
+    for entry in entries:
         if getattr(entry, port_attr_name) == portId:
             return entry
     return None
@@ -45,8 +48,12 @@ def __get_sap_port(sapSrcPort, type):
 
 def __set_port(newport, portId, type):
     entries = CONFIG_ENTRIES[type]
-    port_attr_name = "tx_AFDX_port_id" if type == ICD_OUTPUT_VL \
-                                        else "RX_AFDX_port_id"
+    if type != ICD_ICMP:
+        port_attr_name = "tx_AFDX_port_id" if type == ICD_OUTPUT_VL \
+                                            else "RX_AFDX_port_id"
+    else:
+        port_attr_name = "rx_vl_id"
+
     for entry in entries:
         if getattr(entry, port_attr_name) == portId:
             CONFIG_ENTRIES[type].remove(entry)
@@ -73,6 +80,7 @@ def put_processed_packet(afdxPacket):
 def WRITE(afdxPortId, payload):
     port = __get_port(afdxPortId, ICD_INPUT_VL)
     setattr(port, 'payload', payload)
+    setattr(port, 'proto', 'UDP')
     __set_port(port, afdxPortId, ICD_INPUT_VL)
     return port
 
@@ -82,8 +90,19 @@ def WRITE_Sap(sapSrcPort, payload, ipDest, udpDest):
     setattr(port, 'payload', payload)
     port.ip_dst = ipDest
     port.udp_dst = udpDest
+    setattr(port, 'proto', 'UDP')
     __set_port(port, port.tx_AFDX_port_id, ICD_INPUT_VL)
     return port
+
+def WRITE_ICMP(vlId, message):
+    port = __get_port(vlId, ICD_ICMP)
+    setattr(port, 'payload', message)
+    setattr(port, 'ip_dst', get('TR_IP'))
+    setattr(port, 'vl_id', int(port.rx_vl_id))
+    setattr(port, 'proto', 'ICMP')
+    __set_port(port, vlId, ICD_ICMP)
+    return port
+    
 
 def READ(portId):
 

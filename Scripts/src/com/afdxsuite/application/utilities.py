@@ -104,6 +104,7 @@ def buildShortMessage(port, message = "", offset_size = 0):
         return message[:new_size]
 
 def buildMessage(port, size, message = ""):
+
     acceptable_size = size \
         if size < int(port.buffer_size) else int(port.buffer_size)
 
@@ -115,3 +116,20 @@ def buildMessage(port, size, message = ""):
     else:
         new_message = message + "*" * (size - len(message))
     return new_message
+
+def buildStaticMessage(size, message = ""):
+    newsize = size - len(message)
+    message = message + "*" * newsize
+    return message
+
+def buildFragmentedMessage(port, noofFragments, message = ""):
+    msg_size = len(message)
+    mfs = int(port.max_frame_size)
+    if mfs > 1471:
+        mfs = 1471
+    new_size = (mfs * noofFragments) - msg_size
+
+    if new_size > port.buffer_size:
+        new_size = port.buffer_size
+
+    return message + "*" * (new_size - 8)

@@ -70,8 +70,16 @@ class PacketChecker(object):
             return False
         return True
 
+    def __lengthCheck(self):
+        port = self.__packet.conf_vl
+        if self.__packet[IP].len > (int(port.max_frame_size) + 8):
+            print 'payload > mfs'
+            return False
+        return True
+
     def runChecks(self):
-        if self.__ethernetCheck() and self.__ipCheck():
+        if self.__lengthCheck() and self.__ethernetCheck() \
+        and self.__ipCheck():
             if self.__packet[UDP] != None:
                 self.__valid = self.__udpCheck()
             elif self.__packet[ICMP] != None:

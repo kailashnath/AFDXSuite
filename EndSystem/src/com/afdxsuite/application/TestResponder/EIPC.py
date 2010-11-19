@@ -2,6 +2,7 @@ from com.afdxsuite.application.TestResponder import Command,\
     testresponder_sequencer, reaction_queue
 from com.afdxsuite.application.TestResponder.utils import i2h
 from com.afdxsuite.config.Factory import WRITE
+from com.afdxsuite.config import Factory
 
 EIPC_HOLD = 'HOLD'
 EIPC_SEND = 'SEND'
@@ -37,10 +38,14 @@ class EIPC(Command):
 
     def execute(self):
         action_status = False
-        if self.__sendorhold == EIPC_HOLD:
-            action_status = reaction_queue.push(self)
+        icd_entry = Factory.GET_Port_Output(self.getComport())
+        if len(self.__text) > icd_entry.max_frame_size:
+            action_status = False
         else:
-            action_status = self.__sendOnPort()
+            if self.__sendorhold == EIPC_HOLD:
+                action_status = reaction_queue.push(self)
+            else:
+                action_status = self.__sendOnPort()
         if not action_status:
             self.__response = 'ERR  '
 

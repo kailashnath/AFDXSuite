@@ -42,6 +42,14 @@ class TransmitHandler(object):
         #udp_layer.len    = len(port.payload)
         self.__packet = self.__packet/udp_layer
 
+    def __addICMP(self):
+        port = self.__port
+        icmp = ICMP()
+        icmp.seq = self._sn_handler.next(port.rx_vl_id)
+        self.__packet /= icmp
+        
+        
+
     def __addPayload(self):
         self.__packet /= self.__port.payload
 
@@ -50,7 +58,8 @@ class TransmitHandler(object):
 
         # any payload size greater than 1472 needs to be fragmented
         # as the its the ethernet limitation
-        if len(port.payload) > 1472 or len(port.payload) > port.max_frame_size:
+        if (len(port.payload) > 1472 or \
+            len(port.payload) > port.max_frame_size):
             self.__packet = self.fragment(self.__packet)
         else:
             self.__packet = [self.__packet]
@@ -83,33 +92,47 @@ class TransmitHandler(object):
             return
         if (not hasattr(self.__port, 'payload')) or self.__port.payload == None:
             return
+
         self.__addEthernetDetails()
         self.__addIpDetails()
-        self.__addUDPDetails()
+        if self.__port.proto == 'UDP':
+            self.__addUDPDetails()
+        elif self.__port.proto == 'ICMP':
+            self.__addICMP()
+
         self.__addPayload()
         self.__normalize()
 
     def transmit(self, port, network = None):
+        def transmit_low(packet, network):
+            packet = self.__addPadding(packet)
+            print 'sending on', network
+
+            if NETWORK_A in network:
+                packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
+                sendp(packet, iface = get("NETWORK_INTERFACE_A"),
+                      verbose = False)
+            if NETWORK_B in network:
+                packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
+                sendp(packet, iface = get("NETWORK_INTERFACE_B"),
+                      verbose = False)
+
         self.__port = port
         self.__createPacket()
 
         if network == None:
             network = self.__network
-        print NETWORK_A in network, NETWORK_B in network, network
-        for packet in self.__packet:
-            packet = self.__addPadding(packet)
 
-            if NETWORK_A in network:
-                print 'sending on A'
-                packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
-                sendp(packet, iface = get("NETWORK_INTERFACE_A"),
-                      verbose = False)
-            if NETWORK_B in network:
-                print 'sending on B'
-                packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
-                sendp(packet, iface = get("NETWORK_INTERFACE_B"),
-                      verbose = False)
-
+        if type(network) == list:
+            if len(network) == len(self.__packet):
+                for index in range(0, len(network)):
+                    network_id = network[index]
+                    packet = self.__packet[index]
+                    transmit_low(packet, network_id)
+        else:
+            for packet in self.__packet:
+                transmit_low(packet, network)
+            
     def fragment(self, packet):
         max_frame_size = 1472 if self.__port.max_frame_size > 1472 else \
         self.__port.max_frame_size 
