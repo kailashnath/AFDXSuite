@@ -3,6 +3,7 @@ from com.afdxsuite.core.network.scapy import Ether, sendp, IP, UDP, Raw, ICMP,\
     SNMP, Padding, fragment
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.utils import SequenceHandler
+from com.afdxsuite.application.utilities import i2h
 
 class TransmitHandler(object):
     __network = None
@@ -78,11 +79,14 @@ class TransmitHandler(object):
         if payload_length < 17:
             padding = '\0' * (17 - payload_length)
 
-        sn = self._sn_handler.next(self.__port.vl_id)
+        if hasattr(self.__port, 'sn_func'):
+            sn = self.__port.sn_func(self.__port.vl_id)
+        else:
+            sn = self._sn_handler.next(self.__port.vl_id)
         if sn == 0:
             padding += '\0'
         else:
-            padding += chr(sn)
+            padding += ('\\x%02X' % sn).decode('string_escape')
 
         packet /= Padding(padding)
         return packet
@@ -102,6 +106,9 @@ class TransmitHandler(object):
 
         self.__addPayload()
         self.__normalize()
+
+    def change_sequence_number(self, to_seqno, vlId):
+        self._sn_handler.change_sn(to_seqno, vlId)
 
     def transmit(self, port, network = None):
         def transmit_low(packet, network):

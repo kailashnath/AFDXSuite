@@ -5,6 +5,10 @@ class SequenceHandler(object):
         self.__current_sn = {}
         self.__ipid = 1
 
+    def change_sn(self, seqNo, vlId):
+        if self.__current_sn.has_key(vlId):
+            self.__current_sn[vlId] = seqNo
+
     def next(self, vlId):
         sn = self.__current_sn[vlId] if self.__current_sn.has_key(vlId) else -1
 

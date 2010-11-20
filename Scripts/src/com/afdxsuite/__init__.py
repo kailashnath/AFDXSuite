@@ -13,11 +13,12 @@ from com.afdxsuite.scripts.Script009 import Script009
 from com.afdxsuite.scripts.Script010 import Script010
 from com.afdxsuite.scripts.Script011 import Script011
 from com.afdxsuite.scripts.Script012 import Script012
+from com.afdxsuite.scripts.Script013 import Script013
 
 if __name__ == '__main__':
     application = Application(NETWORK_AB)
     application.boot()
-    script = Script012(application)
+    script = Script013(application)
     script.run()
     script.stop()
     application.close()
