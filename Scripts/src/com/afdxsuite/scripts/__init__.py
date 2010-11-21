@@ -1,5 +1,5 @@
 from com.afdxsuite.core.network.receiver.Receiver import IReceiver, Receiver
-from com.afdxsuite.core.network.scapy import PcapWriter
+from com.afdxsuite.core.network.scapy import PcapWriter, conf
 from com.afdxsuite.application import CAPTURES_PARENT_DIRECTORY,\
     LOGGER_PARENT_DIRECTORY
 from com.afdxsuite.logger import Logger, general_logger
@@ -9,7 +9,7 @@ from com.afdxsuite.application.utilities import pollForResponse
 from com.afdxsuite.application.properties import get
 
 import os
-from com.afdxsuite.core.network import NETWORK_AB
+from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A
 
 class ScriptReceiver(IReceiver):
     __writer = None
@@ -47,7 +47,7 @@ class Script(object):
     __receiver = None
     __scriptName = None
     logger = general_logger
-    network  = 'A'
+    network  = NETWORK_A
 
     def __init__(self, name, has_sequences = False):
         self.logger = \
@@ -121,6 +121,45 @@ class Script(object):
         if not pollForResponse('OK'):
             self.logger.error("The ES has not responded to RSET")
 
+    def sendICMP(self, port, message, poll = True):
+        port = Factory.WRITE_ICMP(port.rx_vl_id, message)
+        self.application.transmitter.transmit(port, self.network)
+        if poll:
+            pollForResponse(message, timeout = 1)
+
     def stop(self):
         self.logger.info("Stopping the script " + self.__scriptName)
         self.__receiver.stop()
+
+    def getMIBGroup(self, group_name, extra_id = None):
+        oid_lst = []
+        for key in conf.mib.keys():
+            if group_name in key and len(key) > len(group_name) and "Group" not in key:
+                oid_value = conf.mib[key]
+                oid_lst.append(oid_value)
+    
+        oid_lst.sort()
+        return oid_lst
+
+    def getAFDXEquipmentGroup(self):
+        mib_group = [conf.mib['afdxEquipmentDesignation'],
+                     conf.mib['afdxEquipmentPN'],
+                     conf.mib['afdxEquipmentSN'],
+                     conf.mib['afdxEquipmentLN'],
+                     conf.mib['afdxEquipmentStatus'],
+                     conf.mib['afdxEquipmentLocation'],
+                     conf.mib['afdxEquipmentUpTime']]
+        return mib_group
+
+    def getAFDXMacGroup(self):
+        mib_group = [conf.mib['afdxMACAddress'],
+                     conf.mib['afdxMACStatus'],
+                     conf.mib['afdxMACInOctets'],
+                     conf.mib['afdxMACOutOctets'],
+                     conf.mib['afdxMACTotalInErrors'],
+                     conf.mib['afdxMACDestAddrErrors'],
+                     conf.mib['afdxMACAlignmentErrors'],
+                     conf.mib['afdxMACRCErrors'],
+                     conf.mib['afdxMACFrameLengthErrors'],
+                     conf.mib['afdxMACIntMacRxErrors']]
+        return mib_group

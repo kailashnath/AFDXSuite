@@ -2,10 +2,17 @@ from com.afdxsuite.core.network.receiver.Receiver import IReceiver, Receiver
 
 import time
 from com.afdxsuite.core.network import NETWORK_AB
-from com.afdxsuite.core.network.scapy import IP, UDP, Raw
+from com.afdxsuite.core.network.scapy import IP, UDP, Raw, conf
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING, PORT_SAMPLING
 
 command_poller = None
+
+# MIB CONSTANTS
+MIB_MAC_GROUP         = "afdxMAC"
+MIB_EQUIPMENT_GROUP   = "afdxEquipment"
+MIB_IP_GROUP          = "afdxIP"
+MIB_UDP_GROUP         = "afdxUDP"
+MIB_ES_FAILURE_GROUP  = "afdxESFailure"
 
 class ResponsePoller(IReceiver):
     
@@ -133,3 +140,90 @@ def buildFragmentedMessage(port, noofFragments, message = ""):
         new_size = port.buffer_size
 
     return message + "*" * (new_size - 8)
+
+
+
+################################################################################
+def getAFDXEquipmentGroup(extra_id = None):
+    """
+        Returns the oid list for AFDX Equipment Group
+    """
+    return getMIBGroup(MIB_EQUIPMENT_GROUP, extra_id)
+
+################################################################################################################
+def getAFDXESFailureGroup(extra_id = None):
+    """
+        Returns the oid list for AFDX ES Failure Group
+    """
+    return getMIBGroup(MIB_ES_FAILURE_GROUP, extra_id)
+
+################################################################################################################
+def getAFDXIPGroup(extra_id = None):
+    """
+        Returns the oid list for AFDX IP Group
+    """
+    return getMIBGroup(MIB_IP_GROUP, extra_id)
+
+################################################################################################################
+def getAFDXMACGroup(extra_id = 1):
+    """
+        Returns the oid list for AFDX Mac Group
+    """
+    return getMIBGroup(MIB_MAC_GROUP, extra_id)
+
+################################################################################################################
+def getAFDXUDPGroup(extra_id = None):
+    """
+        Returns the oid list for AFDX UDP Group
+    """
+    return getMIBGroup(MIB_UDP_GROUP, extra_id)
+
+################################################################################################################
+def getMIBGroup(group_name, extra_id = None):
+    """
+        Returns an oid list from the leafs of the requested group
+    """
+    oid_lst = []
+    for key in conf.mib.keys():
+        if group_name in key and len(key) > len(group_name) and "Group" not in key:
+            oid_value = getMIBOID(key, extra_id)
+            oid_lst.append(oid_value)
+
+    oid_lst.sort()
+    return oid_lst
+    
+################################################################################################################
+def getMIBOID(oid_name, extra_id = None):
+    """
+        Returns the OID for the giving oid name
+    """
+    oid_value = conf.mib[oid_name]
+    if extra_id == None:
+        extra_id = 0
+
+    # change last value od oid to extra_id
+    oid_value += "." + str(extra_id)
+
+    #Commented cause dead code
+#    else:
+#        if not oid_value.endswith('.0'):
+#            traceLog('table entry missing for %s' % oid_value, logging.WARNING, to_stdout = True)
+            
+    return oid_value
+
+def getMIBOIDBySize(size):
+    curr_size = 0
+    oids = []
+
+    while len(oids) < size:
+        for key in conf.mib.keys():
+            oid = conf.mib[key]
+            if not 'enterprises' in oid:
+                continue
+            # we are adding 1 because while doing snmp get we will be adding
+            # trailer ".0"
+            curr_size += len(oid.replace('.', '')) + 1
+
+            if curr_size > size:
+                return oids
+            oids.append(oid)

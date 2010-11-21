@@ -23,10 +23,15 @@ class Script013(Script):
         else:
             sn = 2
         self.__sns[vl_id] = sn
-        print 'SN = ', sn
+
         return sn
 
     def send_modified_snpackets(self, ports, networks):
+        if len(ports) == 0:
+            self.logger.error("There are no ports in the icd file satisfying" \
+                              " this criteria. Hence quitting the sequence")
+            return
+        self.sendRSET()
         for port in ports:
             for network in networks:
                 message = "PortId = %s %s" % (port.RX_AFDX_port_id, network)
@@ -39,9 +44,10 @@ class Script013(Script):
                 rrpc = RRPC(port)
                 self.network = NETWORK_A
                 self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
-                #pollForResponse('RRPC')
+                pollForResponse('RRPC')
 
     def send_modified_snfragments(self, ports, networks):
+        self.sendRSET()
         for port in ports:
             message = "PortId = %s" % port.RX_AFDX_port_id
             message = buildFragmentedMessage(port, len(networks), message)
@@ -51,6 +57,7 @@ class Script013(Script):
             rrpc = RRPC(port)
             self.network = NETWORK_A
             self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
+            pollForResponse('RRPC')
 
     def sequence1(self):
         #self.sendRSET()
@@ -64,10 +71,10 @@ class Script013(Script):
                 rrpc = RRPC(port)
                 self.network = NETWORK_A
                 self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
-                #pollForResponse('RRPC')
+                pollForResponse('RRPC')
 
     def sequence2(self):
-        #self.sendRSET()
+
         ports = []
         for port in self.input_ports:
             if port.ic_active == False:
@@ -77,7 +84,7 @@ class Script013(Script):
         self.send_modified_snpackets(ports, networks)
 
     def sequence3(self):
-        self.sendRSET()
+
         ports = []
         for port in self.input_ports:
             if port.ic_active == False or \
@@ -88,7 +95,7 @@ class Script013(Script):
         self.send_modified_snfragments(ports, networks)
 
     def sequence4(self):
-        self.sendRSET()
+
         ports = []
         for port in self.input_ports:
             if port.ic_active == True:
@@ -99,7 +106,31 @@ class Script013(Script):
 
 
     def sequence5(self):
-        pass
+        ports = []
+        for port in self.input_ports:
+            if port.ic_active == True:
+                continue
+            ports.append(port)
+        networks = [NETWORK_AB, NETWORK_A, NETWORK_B, NETWORK_A, NETWORK_B]
+        self.send_modified_snfragments(ports, networks)
 
     def run(self):
+        self.logger.info("Starting sequence 1")
+        self.sequence1()
+        self.logger.info("Completed sequence 1")
+
+        self.logger.info("Starting sequence 2")
+        self.sequence2()
+        self.logger.info("Completed sequence 2")
+        
+        self.logger.info("Starting sequence 3")
         self.sequence3()
+        self.logger.info("Completed sequence 3")
+        
+        self.logger.info("Starting sequence 4")
+        self.sequence4()
+        self.logger.info("Completed sequence 4")
+        
+        self.logger.info("Starting sequence 5")
+        self.sequence5()
+        self.logger.info("Completed sequence 5")

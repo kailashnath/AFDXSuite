@@ -58,7 +58,8 @@ class ICD_AFDX_INPUT_VL(ICDPARSER):
 
 class ICD_AFDX_ICMP(ICDPARSER):
     columns = ("dest_ip", 'reply_vl_id', 'reply_sub_vl_id', 'reply_vl_network_select',
-               'reply_vl_bag', 'reply_vl_mfs', 'reply_vl_buffersize', 'rx_vl_id', 
+               'reply_vl_bag', 'reply_vl_mfs', 'reply_vl_buffersize', 'rx_vl_id',
+               'rx_vl_network_select', 
                'rx_vl_bag', 'rx_vl_skew_max', 'rx_vl_ic', 'rma', 'rx_vl_mfs', 
                'rx_vl_buff_size')
 

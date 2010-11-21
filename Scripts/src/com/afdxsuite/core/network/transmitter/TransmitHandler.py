@@ -1,6 +1,7 @@
-from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
+from com.afdxsuite.core.network import NETWORK_A, NETWORK_B, scapy
 from com.afdxsuite.core.network.scapy import Ether, sendp, IP, UDP, Raw, ICMP,\
-    SNMP, Padding, fragment
+    SNMP, Padding, fragment, SNMPvarbind, ASN1_OID, SNMPresponse, SNMPnext,\
+    SNMPget
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.utils import SequenceHandler
 from com.afdxsuite.application.utilities import i2h
@@ -29,12 +30,12 @@ class TransmitHandler(object):
             get("TE_IP")
         ip_layer.dst = port.ip_dst
         ip_layer.id  = self._sn_handler.nextIpId()
+        ip_layer.ttl = 1
         #ip_layer.prot = 0x17
         self.__packet = self.__packet/ip_layer
 
     def __addUDPDetails(self):
         port = self.__port
-
         udp_layer = UDP()
         udp_layer.sport = port.udp_src if hasattr(port, 'udp_src') else \
         int(get("TE_UDP"))
@@ -48,26 +49,45 @@ class TransmitHandler(object):
         icmp = ICMP()
         icmp.seq = self._sn_handler.next(port.rx_vl_id)
         self.__packet /= icmp
-        
-        
+
+    def __addSNMP(self):
+
+        oids = self.__port.oids
+        varbindlist = [SNMPvarbind(oid = \
+                                   ASN1_OID(str(oid).replace("enterprises", \
+                                                             "1.3.6.1.4.1"))) \
+                                                             for oid in oids]
+        if 'next' in self.__port.proto:
+            pdu = SNMPnext(varbindlist = varbindlist)
+        else:
+            pdu = SNMPget(varbindlist = varbindlist)
+
+        snmp_packet = scapy.SNMP(community = "afdxRead", PDU = pdu)
+        print "Packet length is ", len(reduce(lambda x,y : 
+                                              str(x).replace('.', '') + 
+                                              str(y).replace('.', ''), oids))
+        self.__packet /= snmp_packet
 
     def __addPayload(self):
-        self.__packet /= self.__port.payload
+        if 'SNMP' in self.__port.proto:
+            self.__addSNMP()
+        else:
+            self.__packet /= self.__port.payload
 
     def __normalize(self):
         port = self.__port
-
         # any payload size greater than 1472 needs to be fragmented
         # as the its the ethernet limitation
         if (len(port.payload) > 1472 or \
-            len(port.payload) > port.max_frame_size):
+            len(port.payload) > int(port.max_frame_size)):
             self.__packet = self.fragment(self.__packet)
         else:
             self.__packet = [self.__packet]
 
     def __addPadding(self, packet):
         if packet[SNMP] != None:
-            payload_length = packet[UDP].len - 8
+            return packet
+            #payload_length = packet[UDP].len - 8
         else:
             payload_length = len(packet[Raw])
 
@@ -99,7 +119,7 @@ class TransmitHandler(object):
 
         self.__addEthernetDetails()
         self.__addIpDetails()
-        if self.__port.proto == 'UDP':
+        if self.__port.proto in ('UDP', 'SNMP', 'SNMPnext'):
             self.__addUDPDetails()
         elif self.__port.proto == 'ICMP':
             self.__addICMP()
@@ -110,11 +130,49 @@ class TransmitHandler(object):
     def change_sequence_number(self, to_seqno, vlId):
         self._sn_handler.change_sn(to_seqno, vlId)
 
-    def transmit(self, port, network = None):
+    def transmit(self, port, network = None, send = True):
         def transmit_low(packet, network):
             packet = self.__addPadding(packet)
-            print 'sending on', network
+            packets = []
 
+            if NETWORK_A in network:
+                packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
+                if send:
+                    sendp(packet, iface = get("NETWORK_INTERFACE_A"),
+                          verbose = False)
+                else:
+                    packets.append(packet)
+            if NETWORK_B in network:
+                packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
+                if send:
+                    sendp(packet, iface = get("NETWORK_INTERFACE_B"),
+                          verbose = False)
+                else:
+                    packets.append(packet)
+            return packets
+
+        self.__port = port
+        self.__createPacket()
+
+        if network == None:
+            network = self.__network
+
+        packets = []
+
+        if type(network) == list:
+            if len(network) == len(self.__packet):
+                for index in range(0, len(network)):
+                    network_id = network[index]
+                    packet = self.__packet[index]
+                    packets += transmit_low(packet, network_id)
+        else:
+            for packet in self.__packet:
+                packets += transmit_low(packet, network)
+        if not send:
+            return packets
+
+    def transmit_packets(self, packets, network):
+        for packet in packets:
             if NETWORK_A in network:
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
                 sendp(packet, iface = get("NETWORK_INTERFACE_A"),
@@ -124,26 +182,12 @@ class TransmitHandler(object):
                 sendp(packet, iface = get("NETWORK_INTERFACE_B"),
                       verbose = False)
 
-        self.__port = port
-        self.__createPacket()
-
-        if network == None:
-            network = self.__network
-
-        if type(network) == list:
-            if len(network) == len(self.__packet):
-                for index in range(0, len(network)):
-                    network_id = network[index]
-                    packet = self.__packet[index]
-                    transmit_low(packet, network_id)
-        else:
-            for packet in self.__packet:
-                transmit_low(packet, network)
-            
     def fragment(self, packet):
-        max_frame_size = 1472 if self.__port.max_frame_size > 1472 else \
-        self.__port.max_frame_size 
-        if max_frame_size < len(packet[Raw].load):
+
+        max_frame_size = 1472 if int(self.__port.max_frame_size) > 1472 else \
+        int(self.__port.max_frame_size) 
+        if (packet[Raw] != None and  max_frame_size < len(packet[Raw].load)) or\
+        (packet[SNMP] != None and max_frame_size < len(packet[SNMP])):
             return fragment(packet, max_frame_size)
         else:
             return [packet]

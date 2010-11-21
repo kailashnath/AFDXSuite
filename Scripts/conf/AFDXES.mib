@@ -1,0 +1,733 @@
+--
+-- AIRBUS AFDX END-SYSTEM MIB
+--
+-- Airbus France
+-- 04/07/03
+-- Version 1.4
+--
+
+AIRBUS-AFDX-ES-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS     enterprises, Counter32, IpAddress, TimeTicks    FROM RFC1155-SMI
+            TRAP-TYPE                                       FROM RFC-1215
+            OBJECT-TYPE                                     FROM RFC-1212;
+
+airbus         OBJECT IDENTIFIER ::= { enterprises 11348 }
+afdx           OBJECT IDENTIFIER ::= { airbus 1 }
+afdxEndSystem  OBJECT IDENTIFIER ::= { afdx 1 }
+
+afdxEndSystemMIB MODULE-IDENTITY
+   LAST-UPDATED "200410260000Z"
+   ORGANIZATION "SAGEM URD23"
+   CONTACT-INFO
+      "Bruno TARDY
+       bruno.tardy@sagem.com"
+   DESCRIPTION
+      "The MIB module for AFDX End System updated with conformance information"
+   ::= { airbus 50 }
+
+-- Groups in AIRBUS AFDX End-System MIB
+--  The groups afdxEquipment, afdxMAC, afdxIP, afdxICMP, afdxUDP,
+--  afdxESFailure are mandatories for the end-system (CPIOM, IOM, AFDX switch, etc.)
+--  The afdxTCP group is mandatory for the equipment using TCP.
+--  The group afdxRedundancy is mandatory for the equipment using the redundancy.
+
+afdxEquipment   OBJECT IDENTIFIER ::= { afdxEndSystem   1 }
+afdxMAC         OBJECT IDENTIFIER ::= { afdxEndSystem   2 }
+afdxRedundancy  OBJECT IDENTIFIER ::= { afdxEndSystem   3 }
+afdxIP          OBJECT IDENTIFIER ::= { afdxEndSystem   4 }
+afdxICMP        OBJECT IDENTIFIER ::= { afdxEndSystem   5 }
+afdxUDP         OBJECT IDENTIFIER ::= { afdxEndSystem   6 }
+afdxTCP         OBJECT IDENTIFIER ::= { afdxEndSystem   7 }
+afdxESFailure   OBJECT IDENTIFIER ::= { afdxEndSystem   8 }
+
+--
+-- The afdxEquipment group
+--
+-- The afdxEquipment group contains the generic information
+-- about an equipment connected on the network AFDX.
+-- This group is mandatory for all the equipment (subscriber AFDX).
+--
+
+afdxEquipmentDesignation OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..20))
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Equipment designation."
+    ::= { afdxEquipment 1 }
+
+afdxEquipmentPN OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..32))
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Part number of the equipment."
+    ::= { afdxEquipment 2 }
+
+afdxEquipmentSN  OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..32))
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Serial Number of the equipment."
+    ::= { afdxEquipment 3 }
+
+afdxEquipmentLN  OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..32))
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Load Part Number (which contains the network configuration table)."
+    ::= { afdxEquipment 4 }
+
+afdxEquipmentStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+healthy(1),
+inFault(2)
+}
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Network Status of the equipment. The values can be :
+                        - Healthy (1),
+                        - inFault (2)."
+    ::= { afdxEquipment 5 }
+
+afdxEquipmentLocation OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..10))
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Equipment Location. Side position."
+    ::= { afdxEquipment 6 }
+
+afdxEquipmentUpTime  OBJECT-TYPE
+    SYNTAX      TimeTicks
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Time since the network management portion of the system was last reinitialised."
+        DEFVAL { 0 }
+        ::= { afdxEquipment 7 }
+
+
+--
+-- The afdxMAC group
+--
+-- The afdxMAC group contains objects describing the ethernet MAC layer
+-- of an equipment connected to the AFDX network. This objects define information about
+-- the failure and the performance of the ethernet connection.
+--
+
+afdxMACTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF AfdxMACEntry
+        ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+                "This is the table of MAC entry."
+::= {  afdxMAC 1  }
+
+afdxMACEntry OBJECT-TYPE
+        SYNTAX  AfdxMACEntry
+        ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+                "An entry in the afdx MAC table"
+        INDEX {  afdxMACIndex }
+::= { afdxMACTable 1 }
+
+AfdxMACEntry ::= SEQUENCE {
+afdxMACIndex               INTEGER,
+afdxMACAddress             OCTET STRING,
+afdxMACStatus              INTEGER,
+afdxMACInOctets            Counter32,
+afdxMACOutOctets           Counter32,
+afdxMACInFrames            Counter32,
+afdxMACOutFrames           Counter32,
+afdxMACTotalInErrors       Counter32,
+afdxMACDestAddrErrors      Counter32,
+afdxMACAlignmentErrors     Counter32,
+afdxMACCRCErrors                Counter32,
+afdxMACFrameLengthErrors        Counter32,
+afdxMACIntMACRxErrors   Counter32
+}
+
+afdxMACIndex OBJECT-TYPE
+    SYNTAX      INTEGER
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Index of the physical port Ethernet."
+    ::= { afdxMACEntry 1 }
+
+afdxMACAddress OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..6))
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"MAC address of the port. The value can be empty. (see case of the switch)."
+    ::= { afdxMACEntry 2 }
+
+afdxMACStatus OBJECT-TYPE
+        SYNTAX INTEGER {
+                healthy(1),
+                lossOfLink(2),
+inFault(3)
+           }
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Status of the port. The values can be :
+                        - Healthy (1),
+                        - lossOfLink (2),
+                        - inFault (3)."
+    ::= { afdxMACEntry 3 }
+
+afdxMACInOctets OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Total number of octets received on this port."
+    ::= { afdxMACEntry 4 }
+
+afdxMACOutOctets OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Total number of octets transmitted on the interface."
+    ::= { afdxMACEntry 5 }
+
+afdxMACInFrames OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Total number of frames received on this port including those received in errors."
+    ::= { afdxMACEntry 6 }
+
+afdxMACOutFrames OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Total number of frames transmitted on the interface."
+    ::= { afdxMACEntry 7 }
+
+afdxMACTotalInErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Number of frames discarded due to an error in reception."
+    ::= { afdxMACEntry 8 }
+
+afdxMACDestAddrErrors OBJECT-TYPE
+        SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Number of frames discarded due to an address MAC destination erroneous."
+    ::= { afdxMACEntry 9 }
+
+afdxMACAlignmentErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+       "Received frames that are not an integral number of octets."
+    ::= { afdxMACEntry 10 }
+
+afdxMACCRCErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+"Received frames that do not pass the CRC check."
+    ::= { afdxMACEntry 11 }
+
+afdxMACFrameLengthErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+       "Received frames that the length is longer than the maximum frame size
+         or smaller than the minimum frame size."
+    ::= { afdxMACEntry 12 }
+
+afdxMACIntMACRxErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Frames for which reception fails due to internal MAC  Error
+         (Header : Preamble, Start Frame Delimiter, Type). The frame is discarded."
+    ::= { afdxMACEntry 13 }
+
+--
+-- The afdxRedundancy group
+--
+-- The afdxRedundancy group contains counters about the redundancy working.
+-- Therefore this group is significant only for the equipment using the
+-- redundancy else the table associated to the redundancy is empty.
+--
+
+-- AFDX Redundancy Error
+afdxRedundancyErrorTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF AfdxRedundancyErrorEntry
+    ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+        "Table of AFDX error redundancy."
+    ::= {  afdxRedundancy 1  }
+
+afdxRedundancyErrorEntry   OBJECT-TYPE
+    SYNTAX  AfdxRedundancyErrorEntry
+    ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+        "An entry in the redundancy error table"
+    INDEX {  afdxRedundancyPortIndex}
+    ::= { afdxRedundancyErrorTable 1 }
+
+AfdxRedundancyErrorEntry ::= SEQUENCE {
+           
+               afdxRedundancyPortIndex             INTEGER,
+               afdxRedundancyIntegrityCheckError   Counter32
+       }
+
+afdxRedundancyPortIndex OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+        "Index of the port Ethernet."
+    ::= { afdxRedundancyErrorEntry 1 }
+
+afdxRedundancyIntegrityCheckError OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+      "Total number of input frame with an error of the type Redundancy Sequence Number (by port)."
+    ::= { afdxRedundancyErrorEntry 2 }
+
+-- AFDX Redundancy Statistics Table
+afdxRedundancyStatsTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF AfdxRedundancyStatsEntry
+    ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+       "Table of AFDX Statistics redundancy (by VL)."
+    ::= {  afdxRedundancy 2 }
+
+afdxRedundancyStatsEntry   OBJECT-TYPE
+    SYNTAX  AfdxRedundancyStatsEntry
+    ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+      "An entry in the redundancy Stats table"
+    INDEX {  afdxRedundancyVLPortIndex, afdxRedundancyVLMacAddress}
+    ::= { afdxRedundancyStatsTable 1 }
+
+AfdxRedundancyStatsEntry ::= SEQUENCE {
+afdxRedundancyVLPortIndex                       INTEGER,
+afdxRedundancyVLMacAddress                      INTEGER,
+afdxRedundancyVLIntegrityCheckError     Counter32,
+afdxRedundancyVLFirstInFrames           Counter32
+}
+
+afdxRedundancyVLPortIndex OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+      "Index of the port Ethernet."
+    ::= { afdxRedundancyStatsEntry 1 }
+
+afdxRedundancyVLMacAddress OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+      "Multicast MAC address destination of the VL (in reception) using the redundancy."
+    ::= { afdxRedundancyStatsEntry 2 }
+
+afdxRedundancyVLIntegrityCheckError OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of input frame with an error of the Redundancy Integrity Sequence Number"
+    ::= { afdxRedundancyStatsEntry 3 }
+
+afdxRedundancyVLFirstInFrames      OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of frames transmitted to the layer IP."
+    ::= { afdxRedundancyStatsEntry 4 }
+
+--
+-- The afdxIP group
+--
+-- The afdxIP group contains information about the layer
+-- IP (errors and performance information).
+--
+
+afdxIPInReceives OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of input datagrams received, including those received in error."
+    ::= { afdxIP 1 }
+
+afdxIPOutRequests OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of IP datagrams  in output, including those in error."
+    ::= { afdxIP 2 }
+
+afdxIPInTotalErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of input datagrams discarded due to an error."
+    ::= { afdxIP 3 }
+
+afdxIPOutTotalErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of output datagrams discarded due to an error."
+    ::= { afdxIP 4 }
+
+afdxIPInChkSumErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of input datagrams discarded due to errors in the IP header checksum."
+    ::= { afdxIP 5 }
+
+afdxIPInUnknownProtos OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of locally addressed datagrams received successfully but discarded
+         because of an unknown or unsupported protocol (Header protocol)."
+    ::= { afdxIP 6 }
+
+afdxIPInDiscards OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of input datagrams for which no problems were encountered to
+         prevent their continued processing but which were discarded
+         (e.g., for lack of buffer space)."
+    ::= { afdxIP 7 }
+
+afdxIPOutDiscards OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of output datagrams for which no problems were encountered
+         to prevent their continued processing but which were discarded
+         (e.g., for lack of buffer space)."
+    ::= { afdxIP 8 }
+
+afdxIPReasmFails OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of IP fragments deleted by the IP reassembly algorithm
+        (for whatever reason:  fragment identifier error, etc),."
+    ::= { afdxIP 9 }
+
+--
+--
+-- The afdxICMP group
+--
+-- The afdxICMP group contains information about the layer ICMP.
+--
+
+afdxICMPInEchos OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of ICMP Echo (request) messages received."
+    ::= { afdxICMP 1 }
+
+afdxICMPInErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of ICMP messages which the entity received but
+         determined as having ICMP-specific errors (length = 0)."
+    ::= { afdxICMP 2 }
+
+afdxICMPInEchoDiscards OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of input messages for which no problems were
+         encountered to prevent their continued processing but
+         which were discarded (e.g., for lack of buffer space)."
+    ::= { afdxICMP 3 }
+
+afdxICMPOutEchoReps OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Number of ICMP Echo Reply messages sent."
+    ::= { afdxICMP 4 }
+
+afdxICMPOutErrors OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "The number of ICMP messages which this entity did not
+         send due to problems discovered within ICMP such as a
+         lack of buffers. This value should not include
+         errors discovered outside the ICMP layer."
+    ::= { afdxICMP 5 }
+
+--
+-- The afdxUDP group
+--
+-- The afdxUDP group contains information about the layer UDP.
+-- The object counts errors in the protocol UDP.
+--
+
+afdxUDPInError OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of input datagrams with an error. (except the No ports error)"
+    ::= { afdxUDP 1 }
+
+afdxUDPNoPorts OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of received UDP datagrams for which there was no application at the destination port."
+    ::= { afdxUDP 2 }
+
+--
+-- The afdxTCP group
+--
+-- The afdxTCP group contains information about the layer TCP.
+-- The object counts errors in the protocol TCP.
+--
+
+afdxTCPInError OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of input segments with an error (except the No ports error)."
+    ::= { afdxTCP 1 }
+
+afdxTCPNoPorts OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of received TCP segments for which there was no application at the
+     destination port."
+    ::= { afdxTCP 2 }
+
+afdxTCPInSegs OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of TCP segments delivered to TCP users."
+    ::= { afdxTCP 3 }
+
+afdxTCPOutSegs OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of TCP segments sent to the IP layer."
+    ::= { afdxTCP 4 }
+
+--
+-- The afdxESFailure group
+--
+-- The afdxESFailure group contains information about the frames discard for lack of buffer space into the end-system
+--
+
+afdxInLackOfBuffer OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of frames discarded in input for lack of buffer space."
+    ::= { afdxESFailure 1 }
+
+afdxOutLackOfBuffer OBJECT-TYPE
+    SYNTAX Counter32
+    ACCESS      read-only
+    STATUS      current
+    DESCRIPTION
+    "Total number of frames discarded in ouput for lack of buffer space."
+    ::= { afdxESFailure 2 }
+
+-- --------------------------------------------------------------------------------
+-- Conformance information
+-- --------------------------------------------------------------------------------
+afdxESConformance OBJECT IDENTIFIER ::= { afdxEndSystemMIB  1 }
+afdxESGroups      OBJECT IDENTIFIER ::= { afdxESConformance 1 }
+afdxESCompliances OBJECT IDENTIFIER ::= { afdxESConformance 2 }
+
+afdxESCompliance MODULE-COMPLIANCE
+   STATUS current
+   DESCRIPTION
+      "The compliance statement for SNMP entities which have an AFDX End System."
+   MODULE -- this module
+      MANDATORY-GROUPS {
+         afdxEquipmentGroup  ,
+         afdxMACGroup        ,
+         afdxRedundancyGroup ,
+         afdxIPGroup         ,
+         afdxICMPGroup       ,
+         afdxUDPGroup        ,
+         afdxTCPGroup        ,
+         afdxESFailureGroup
+      }
+   ::= { afdxESCompliances 1 }
+
+afdxEquipmentGroup OBJECT-GROUP
+   OBJECTS {
+      afdxEquipmentDesignation ,
+      afdxEquipmentPN          ,
+      afdxEquipmentSN          ,
+      afdxEquipmentLN          ,
+      afdxEquipmentStatus      ,
+      afdxEquipmentLocation    ,
+      afdxEquipmentUpTime
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 1 }
+
+afdxMACGroup OBJECT-GROUP
+   OBJECTS {
+     afdxMACIndex              ,
+     afdxMACAddress            ,
+     afdxMACStatus             ,
+     afdxMACInOctets           ,
+     afdxMACOutOctets          ,
+     afdxMACInFrames           ,
+     afdxMACOutFrames          ,
+     afdxMACTotalInErrors      ,
+     afdxMACDestAddrErrors     ,
+     afdxMACAlignmentErrors    ,
+     afdxMACCRCErrors          ,
+     afdxMACFrameLengthErrors  ,
+     afdxMACIntMACRxErrors
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 2 }
+
+afdxRedundancyGroup OBJECT-GROUP
+   OBJECTS {
+     afdxRedundancyPortIndex             ,
+     afdxRedundancyIntegrityCheckError   ,
+     afdxRedundancyVLPortIndex           ,
+     afdxRedundancyVLMacAddress          ,
+     afdxRedundancyVLIntegrityCheckError ,
+     afdxRedundancyVLFirstInFrames
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 3 }
+
+afdxIPGroup OBJECT-GROUP
+   OBJECTS {
+     afdxIPInReceives       ,
+     afdxIPOutRequests      ,
+     afdxIPInTotalErrors    ,
+     afdxIPOutTotalErrors   ,
+     afdxIPInChkSumErrors   ,
+     afdxIPInUnknownProtos  ,
+     afdxIPInDiscards       ,
+     afdxIPOutDiscards      ,
+     afdxIPReasmFails
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 4 }
+
+afdxICMPGroup OBJECT-GROUP
+   OBJECTS {
+     afdxICMPInEchos        ,
+     afdxICMPInErrors       ,
+     afdxICMPInEchoDiscards ,
+     afdxICMPOutEchoReps    ,
+     afdxICMPOutErrors
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 5 }
+
+afdxUDPGroup OBJECT-GROUP
+   OBJECTS {
+     afdxUDPInError ,
+     afdxUDPNoPorts
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 6 }
+
+afdxTCPGroup OBJECT-GROUP
+   OBJECTS {
+     afdxTCPInError ,
+     afdxTCPNoPorts ,
+     afdxTCPInSegs  ,
+     afdxTCPOutSegs
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 7 }
+
+afdxESFailureGroup OBJECT-GROUP
+   OBJECTS {
+     afdxInLackOfBuffer  ,
+     afdxOutLackOfBuffer
+   }
+   STATUS current
+   DESCRIPTION
+      "A collection of objects providing statistics of the AFDX ES."
+      ::= { afdxESGroups 8 }
+
+END

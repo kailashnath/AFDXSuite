@@ -14,11 +14,21 @@ from com.afdxsuite.scripts.Script010 import Script010
 from com.afdxsuite.scripts.Script011 import Script011
 from com.afdxsuite.scripts.Script012 import Script012
 from com.afdxsuite.scripts.Script013 import Script013
+from com.afdxsuite.scripts.Script014 import Script014
+from com.afdxsuite.scripts.Script015 import Script015
+from com.afdxsuite.scripts.Script016 import Script016
+from com.afdxsuite.scripts.Script017 import Script017
+from com.afdxsuite.scripts.Script018 import Script018
+from com.afdxsuite.scripts.Script019 import Script019
+from com.afdxsuite.scripts.Script020 import Script020
+from com.afdxsuite.scripts.Script021 import Script021
+from com.afdxsuite.scripts.Script022 import Script022
+from com.afdxsuite.scripts.Script023 import Script023
 
 if __name__ == '__main__':
     application = Application(NETWORK_AB)
     application.boot()
-    script = Script013(application)
+    script = Script023(application)
     script.run()
     script.stop()
     application.close()
