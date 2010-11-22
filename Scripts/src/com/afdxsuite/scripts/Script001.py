@@ -12,16 +12,21 @@ class Script001(Script):
         super(Script001, self).__init__("ITR-ES-001")
         self.network = application.network
         self.ports = Factory.GET_Ports(self.ports_filter, ICD_OUTPUT_VL)
+        self.ports = self.remove_common_ports(self.ports)
         self.application = application
 
     def ports_filter(self, port):
         if port.network_id in self.network and \
-            port.udp_src != int(get("SNMP_TR_TX")):
+            port.udp_src != int(get("SNMP_TRAP_PORT")):
             return True
         return False
 
     def run(self):
         self.sendRSET()
+        if len(self.ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         for port in self.ports:
             eipc = EIPC(port)
             message = "PortId = %s" % port.tx_AFDX_port_id

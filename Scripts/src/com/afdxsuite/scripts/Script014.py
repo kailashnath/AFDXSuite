@@ -20,6 +20,7 @@ class Script014(Script):
         self.sn_vl = {}
         self.sns = [155, 0, 1, 2, 4, 4, 5, 4, 151, 153, 151, 255, 1, 255, 2,
                     235, 236, 237, 238, 239, 240, 241, 242, 243, 244]
+        self.input_ports = self.remove_common_ports(self.input_ports)
 
     def sn_func(self, vlId):
         if (not self.sn_vl.has_key(vlId)) or (len(self.sn_vl[vlId]) == 0):
@@ -27,10 +28,14 @@ class Script014(Script):
             sns.reverse()
             self.sn_vl[vlId] = sns
         sn = self.sn_vl[vlId].pop()
-        self.logger.info("Sends packet with SN = %d" % sn)
+        self.logger.info("Sending packet with SN = %d" % sn)
         return sn
 
     def run(self):
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         self.sendRSET()
         for port in self.input_ports:
             message = buildShortMessage(port,

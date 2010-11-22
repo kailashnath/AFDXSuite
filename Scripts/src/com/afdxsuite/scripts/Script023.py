@@ -13,7 +13,7 @@ class Script023(Script):
         self.application = application
         super(Script023, self).__init__("ITR-ES-023", has_sequences = True)
         self.sap_ports = self.getPorts({'port_characteristic' : PORT_SAP,
-                                        'udp_dst' : int(get('TE_SNMP'))},
+                                        'udp_dst' : int(get('SNMP_UDP_PORT'))},
                                        ICD_INPUT_VL)
 
     def sendSNMP(self, snmp_port, oids, snmp_type = 0):
@@ -39,7 +39,7 @@ class Script023(Script):
                               " criteria")
             return
         self.captureForSequence(1)
-        #self.sendRSET()
+        self.sendRSET()
         for port in self.sap_ports:
             oids = getMIBOID('afdxEquipmentStatus')
             self.sendSNMP(port, [oids])
@@ -62,7 +62,7 @@ class Script023(Script):
                               " criteria")
             return
         self.captureForSequence(2)
-        #self.sendRSET()
+        self.sendRSET()
         for port in self.sap_ports:
             oid = getMIBOID('afdxEquipmentStatus')
             self.sendSNMP(port, [oid])

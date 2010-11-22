@@ -60,7 +60,12 @@ class Script013(Script):
             pollForResponse('RRPC')
 
     def sequence1(self):
-        #self.sendRSET()
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
+        self.captureForSequence(1)
+        self.sendRSET()
         for port in self.input_ports:
             for network in [NETWORK_AB, NETWORK_A, NETWORK_B]:
                 message = "PortId = %s %s" % (port.RX_AFDX_port_id, network)
@@ -74,7 +79,11 @@ class Script013(Script):
                 pollForResponse('RRPC')
 
     def sequence2(self):
-
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
+        self.captureForSequence(2)
         ports = []
         for port in self.input_ports:
             if port.ic_active == False:
@@ -84,7 +93,11 @@ class Script013(Script):
         self.send_modified_snpackets(ports, networks)
 
     def sequence3(self):
-
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
+        self.captureForSequence(3)
         ports = []
         for port in self.input_ports:
             if port.ic_active == False or \
@@ -95,7 +108,11 @@ class Script013(Script):
         self.send_modified_snfragments(ports, networks)
 
     def sequence4(self):
-
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
+        self.captureForSequence(4)
         ports = []
         for port in self.input_ports:
             if port.ic_active == True:
@@ -106,6 +123,11 @@ class Script013(Script):
 
 
     def sequence5(self):
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
+        self.captureForSequence(5)
         ports = []
         for port in self.input_ports:
             if port.ic_active == True:

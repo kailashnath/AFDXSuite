@@ -100,7 +100,9 @@ class Script(object):
                 val = port.udp_src
             elif hasattr(port, 'udp_dst'):
                 val = port.udp_dst
-            if val in (int(get("TE_UDP")), int(get("TE_SNMP"))):
+            if val in (int(get("TE_UDP")), int(get("SNMP_UDP_PORT"))) or \
+            (hasattr(port, 'vl_id') and \
+             int(port.vl_id) in (int(get("TE_TX_VL")),int(get("TE_RX_VL")))):
                 continue
             filtered_ports.append(port)
         return filtered_ports
@@ -130,6 +132,7 @@ class Script(object):
     def stop(self):
         self.logger.info("Stopping the script " + self.__scriptName)
         self.__receiver.stop()
+        Receiver.deregister(self.__receiver, self.network)
 
     def getMIBGroup(self, group_name, extra_id = None):
         oid_lst = []

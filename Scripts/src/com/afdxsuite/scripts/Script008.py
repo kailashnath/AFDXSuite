@@ -15,6 +15,7 @@ class Script008(Script):
         self.icmp_ports = self.getPorts({}, ICD_ICMP)
         self.input_port = self.getPorts({}, ICD_INPUT_VL)
         self.logger.info("Starting script ITR-ES-008")
+        self.input_port = self.remove_common_ports(self.input_port)
 
     def __sendicmp(self, port, message, poll = True):
         port = Factory.WRITE_ICMP(port.rx_vl_id, message)
@@ -31,6 +32,10 @@ class Script008(Script):
                 self.__sendicmp(port, message)
 
     def sequence2(self):
+        if len(self.input_port) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         self.captureForSequence(2)
         index = 0
         self.network = 'A'

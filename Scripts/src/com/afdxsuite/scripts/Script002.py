@@ -32,7 +32,10 @@ class Script002(Script):
         self.sendRSET()
 
         self.__fillRxPorts(self.input_ports)
-
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         for port in self.input_ports:
             rrpc = RRPC(port)
             self.logger.info("Sending RRPC for port = %s" % \
@@ -46,7 +49,10 @@ class Script002(Script):
     def sequence2(self):
         ports = {}
         atleast_one = False
-
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         for port in self.input_ports:
             key = (port.udp_dst, port.ip_dst)
 

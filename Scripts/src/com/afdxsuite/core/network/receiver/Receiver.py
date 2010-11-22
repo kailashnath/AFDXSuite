@@ -1,5 +1,4 @@
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
-from com.afdxsuite.core.network.scapy import UDP, IP
 
 LISTENERS_DICT = {NETWORK_A : list(), NETWORK_B : list()}
 
@@ -18,7 +17,7 @@ class Receiver:
 
         if not isinstance(receiver, IReceiver):
             return
-        print 'registering', receiver, 'on network', network
+
         if NETWORK_A in network:
             LISTENERS_DICT[NETWORK_A].append(receiver)
         if NETWORK_B in network:
@@ -27,7 +26,10 @@ class Receiver:
     @staticmethod
     def deregister(receiver, network):
         global LISTENERS_DICT
-        LISTENERS_DICT[network].remove(receiver)
+        if NETWORK_A in network:
+            LISTENERS_DICT[NETWORK_A].remove(receiver)
+        if NETWORK_B in network:
+            LISTENERS_DICT[NETWORK_B].remove(receiver)
 
     @staticmethod
     def notifyHandlers(packet, network):

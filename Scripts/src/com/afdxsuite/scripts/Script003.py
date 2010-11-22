@@ -21,6 +21,10 @@ class Script003(Script):
     def run(self):
         self.logger.info("Starting the sequence 1")
         self.sendRSET()
+        if len(self.output_ports) == 0:
+            self.logger.error("There are no ports which satisfy the scripts" \
+                              " criteria.")
+            return
         for port in self.output_ports:
             eipc = EIPC(port)
             message = "Port Id = %s" % port.tx_AFDX_port_id

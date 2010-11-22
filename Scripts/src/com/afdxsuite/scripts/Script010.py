@@ -21,6 +21,10 @@ class Script010(Script):
         self.input_ports = self.remove_common_ports(self.input_ports)
 
     def sequence1(self):
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         self.captureForSequence(1)
         self.sendRSET()
         for port in self.input_ports:
@@ -34,6 +38,10 @@ class Script010(Script):
             pollForResponse('EIPC')
 
     def sequence2(self):
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         self.captureForSequence(2)
         self.sendRSET()
         ports = []

@@ -14,7 +14,7 @@ class Script017(Script):
         self.network = NETWORK_A
         super(Script017, self).__init__('ITR-ES-017', has_sequences = True)
         self.icmp_ports  = self.getPorts({}, ICD_ICMP)
-        self.snmp_ports = self.getPorts({'udp_dst' : int(get('SNMP_TR_RX'))}, \
+        self.snmp_ports = self.getPorts({'udp_dst' : int(get('SNMP_UDP_PORT'))}, \
                                         ICD_INPUT_VL)
         map(lambda port : setattr(port, 'buffer_size', \
                                                     port.rx_vl_buff_size),\
@@ -33,7 +33,8 @@ class Script017(Script):
 
     def sequence1(self):
         self.captureForSequence(1)
-        self.sendRSET()
+        self.sendRSET(poll = True)
+
         sizes = (64, 65, 80)
         for port in self.icmp_ports:
             for size in sizes:
@@ -44,7 +45,7 @@ class Script017(Script):
 
     def sequence2(self):
         self.captureForSequence(2)
-        self.sendRSET()
+        self.sendRSET(poll = True)
 
         for port in self.icmp_ports:
             self.sendSNMP()
@@ -58,7 +59,7 @@ class Script017(Script):
 
     def sequence3(self):
         self.captureForSequence(3)
-        self.sendRSET()
+        self.sendRSET(poll = True)
         for port in self.icmp_ports:
             message = buildStaticMessage(64, "Test")
             count = 150
@@ -69,7 +70,7 @@ class Script017(Script):
 
     def sequence4(self):
         self.captureForSequence(4)
-        self.sendRSET()
+        self.sendRSET(poll = True)
         for port in self.icmp_ports:
             message = buildFragmentedMessage(port, 2, "Fragmented")
             count = 150

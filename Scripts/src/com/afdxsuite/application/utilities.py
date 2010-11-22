@@ -63,7 +63,7 @@ def iptoHexarray(ip_address):
     return "\\x%02X\\x%02X\\x%02X\\x%02X" % (ip_vals[0], ip_vals[1], \
                                              ip_vals[2], ip_vals[3])
 
-def pollForResponse(command, timeout = 5):
+def pollForResponse(command, timeout = 5, logger = None):
     global command_poller
 
     if command_poller == None:

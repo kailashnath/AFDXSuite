@@ -9,7 +9,7 @@ class Script018(Script):
     def __init__(self, application):
         self.application = application
         super(Script018, self).__init__("ITR-ES-018")
-        self.snmp_ports = self.getPorts({'udp_dst' : int(get("TE_SNMP"))},
+        self.snmp_ports = self.getPorts({'udp_dst' : int(get("SNMP_UDP_PORT"))},
                                          ICD_INPUT_VL)
 
     def sendWrongSNMP(self, snmp_port):

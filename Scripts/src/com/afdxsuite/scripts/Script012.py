@@ -18,6 +18,10 @@ class Script012(Script):
         self.output_ports = self.remove_common_ports(self.output_ports)
 
     def run(self):
+        if len(self.output_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         self.sendRSET()
         for port in self.output_ports:
             eipc = EIPC(port)

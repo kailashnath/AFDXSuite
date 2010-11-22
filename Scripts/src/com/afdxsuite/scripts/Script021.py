@@ -1,7 +1,8 @@
 from com.afdxsuite.scripts import Script
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
-from com.afdxsuite.application.utilities import buildFragmentedMessage
+from com.afdxsuite.application.utilities import buildFragmentedMessage,\
+    pollForResponse
 from com.afdxsuite.config import Factory
 from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A, NETWORK_B
 from com.afdxsuite.application.commands.RRPC import RRPC
@@ -12,12 +13,17 @@ class Script021(Script):
     def __init__(self, application):
         self.application = application
         self.network = NETWORK_AB
-        super(Script021, self).__init__("ITR-ES-021")
+        super(Script021, self).__init__("ITR-ES-021", has_sequences = True)
         self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING,
                                           'ip_frag_allowed' : True},
                                          ICD_INPUT_VL)
+        self.input_ports = self.remove_common_ports(self.input_ports)
 
     def do_operation(self, networks):
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         for port in self.input_ports:
             message = buildFragmentedMessage(port, len(networks), "Big message")
             outport = Factory.WRITE(port.RX_AFDX_port_id, message)
@@ -26,6 +32,7 @@ class Script021(Script):
 
             rrpc = RRPC(port)
             self.send(rrpc.buildCommand(), port)
+            pollForResponse('RRPC')
 
     def sequence1(self):
         self.captureForSequence(1)

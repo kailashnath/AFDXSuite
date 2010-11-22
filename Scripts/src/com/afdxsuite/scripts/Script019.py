@@ -17,7 +17,7 @@ class Script019(Script):
         self.output_ports = self.getPorts({}, ICD_OUTPUT_VL)
         self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING},
                                           ICD_INPUT_VL)
-        self.snmp_ports = self.getPorts({'udp_dst' : int(get("TE_SNMP"))},
+        self.snmp_ports = self.getPorts({'udp_dst' : int(get("SNMP_UDP_PORT"))},
                                          ICD_INPUT_VL)
         self.output_ports = self.remove_common_ports(self.output_ports)
         self.input_ports = self.remove_common_ports(self.input_ports)
@@ -44,7 +44,8 @@ class Script019(Script):
 
     def sequence1(self):
         self.captureForSequence(1)
-#        self.sendRSET()
+        self.sendRSET()
+
         if len(self.output_ports) == 0 or len(self.snmp_ports) == 0:
             self.logger.error("There are no ports in the ICD satisfying the "\
                               "scripts criteria")
@@ -55,8 +56,9 @@ class Script019(Script):
         
     def sequence2(self):
         self.captureForSequence(2)
-#        self.sendRSET()
+        self.sendRSET()
         seq_port = None
+
         for port in self.output_ports:
             if port.buffer_size > port.max_frame_size and port.ip_frag_allowed:
                 seq_port = port
@@ -72,6 +74,7 @@ class Script019(Script):
         self.captureForSequence(3)
         self.sendRSET()
         rx_port = None
+
         for port in self.input_ports:
             if port.buffer_size == 8192:
                 rx_port = port

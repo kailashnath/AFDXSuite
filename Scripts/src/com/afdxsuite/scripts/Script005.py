@@ -24,14 +24,18 @@ class Script005(Script):
 
     def run(self):
         self.logger.info("Starting sequence 1")
-        #self.sendRSET()
+        if len(self.output_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
+        self.sendRSET()
         for port in self.output_ports:
             if port.port_characteristic == PORT_SAP:
-                cmd = ESAP(self.application, port)
+                cmd = ESAP(port)
                 setattr(port, "ip_dst", get("TE_IP"))
                 setattr(port, "udp_dst", int(get("TE_UDP")))
             else:
-                cmd = EIPC(self.application, port)
+                cmd = EIPC(port)
 
             command_size = cmd.command_size
             message = "Short message"
@@ -44,4 +48,4 @@ class Script005(Script):
                 self.send(command, Factory.GET_TX_Port())
 
                 if not pollForResponse(("OK", "ERR")):
-                    self.logger.info("The ES did not respond to the command")
+                    self.logger.info("The ES did not respond to EIPC command")

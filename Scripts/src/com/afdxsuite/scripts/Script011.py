@@ -17,13 +17,16 @@ class Script011(Script):
         self.output_ports = self.getPorts({'network_select' : NETWORK_AB,
                                            'port_characteristic' : PORT_QUEUING},
                                           ICD_OUTPUT_VL)
-        #self.output_ports = self.remove_common_ports(self.output_ports)
+        self.output_ports = self.remove_common_ports(self.output_ports)
 
     def run(self):
         self.logger.info("Starting the script")
         smallest_bag = None
         needed_port = None
-
+        if len(self.output_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         for port in self.output_ports:
             bag = port.bag
             if smallest_bag == None:

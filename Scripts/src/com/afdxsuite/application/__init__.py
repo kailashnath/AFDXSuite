@@ -4,7 +4,7 @@ import ConfigParser
 import os
 import time
 
-PARENT_PATH = "../../../" 
+PARENT_PATH = "./" 
 CAPTURES_PARENT_DIRECTORY = PARENT_PATH + "captures/"
 LOGGER_PARENT_DIRECTORY = PARENT_PATH + "logs/"
 
@@ -13,7 +13,7 @@ def createDirectories():
     global CAPTURES_PARENT_DIRECTORY
     global LOGGER_PARENT_DIRECTORY
 
-    todays_dir = time.strftime("%d %h %Y") + "/" + time.strftime("%H:%M")
+    todays_dir = time.strftime("%d %h %Y") + "/" + time.strftime("%H_%M")
 
     try:
         if not os.path.exists(CAPTURES_PARENT_DIRECTORY + todays_dir):

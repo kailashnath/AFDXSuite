@@ -38,6 +38,8 @@ class Script016(Script):
         erpq = ERPQ(port)
         self.send(erpq.buildCommand(), Factory.GET_TX_Port())
         feature_index = 0
+        pollForResponse('ERPQ')
+
         def sendRRPC():
             rrpc = RRPC(port)
             self.send(rrpc.buildCommand(), Factory.GET_TX_Port())

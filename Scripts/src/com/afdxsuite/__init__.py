@@ -24,11 +24,33 @@ from com.afdxsuite.scripts.Script020 import Script020
 from com.afdxsuite.scripts.Script021 import Script021
 from com.afdxsuite.scripts.Script022 import Script022
 from com.afdxsuite.scripts.Script023 import Script023
+from com.afdxsuite.logger import general_logger
+
+import sys, traceback
 
 if __name__ == '__main__':
     application = Application(NETWORK_AB)
-    application.boot()
-    script = Script023(application)
-    script.run()
-    script.stop()
-    application.close()
+    try:
+        application.boot()
+        while True:
+            script = None
+            try:
+                choice = raw_input("Please enter the script number (1 - 23) or"\
+                                   " 0 to exit : ")
+                choice = int(choice)
+                if choice == 0:
+                    break
+                script = eval("Script%03d" % choice)(application)
+                script.run()
+                script.stop()
+            except KeyboardInterrupt:
+                    if script != None:
+                        script.stop()
+            except Exception, ex:
+                general_logger.error("Could not execute the script. : %s" % \
+                                     (str(ex)))
+                traceback.print_exc(file=sys.stdout)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        application.close()

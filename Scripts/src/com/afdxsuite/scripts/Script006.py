@@ -27,20 +27,28 @@ class Script006(Script):
 
     def sequence1(self):
         self.captureForSequence(1)
+        if len(self.input_ports) == 0:
+            self.logger.info("There are no ports in the ICD satisfying the " \
+                             "scripts criteria")
+            return
         self.sendRSET()
         for port in self.input_ports:
             rrpc = RRPC( port)
+
             for count in range(0, 4):
                 message = "Message %d" % count
                 message = buildShortMessage(port, message)
                 self.send(message, port)
+                self.logger.info("Filling the port %s" % port.RX_AFDX_port_id)
                 if count == 0 or count == 3:
                     self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
+                    self.logger.info("Sending an RRPC")
                 if count <= 1:
                     self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
+                    self.logger.info("Sending an RRPC")
                 elif count == 2:
                     continue
-                #pollForResponse('RRPC')
+                pollForResponse('RRPC')
     
     def sequence2(self):
         self.captureForSequence(2)

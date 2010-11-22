@@ -2,7 +2,7 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.airscapy import sniff
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 
-import threading
+import threading, sys, traceback
 from com.afdxsuite.core.network.receiver.Receiver import Receiver
 from com.afdxsuite.logger import general_logger
 from com.afdxsuite.core.network.scapy import IP, UDP
@@ -46,6 +46,7 @@ class ReceiverThread(threading.Thread):
                                  self.__network + " : " + str(ex))
             general_logger.info("The application will not listen for packets" +\
                                 " coming on network : " + self.__network)
+            traceback.print_exc(file=sys.stdout)
 
     def kill(self):
         self.__stop = True
