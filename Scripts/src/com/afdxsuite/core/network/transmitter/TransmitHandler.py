@@ -63,9 +63,9 @@ class TransmitHandler(object):
             pdu = SNMPget(varbindlist = varbindlist)
 
         snmp_packet = scapy.SNMP(community = "afdxRead", PDU = pdu)
-        print "Packet length is ", len(reduce(lambda x,y : 
-                                              str(x).replace('.', '') + 
-                                              str(y).replace('.', ''), oids))
+        #print "Packet length is ", len(reduce(lambda x,y : 
+        #                                      str(x).replace('.', '') + 
+        #                                      str(y).replace('.', ''), oids))
         self.__packet /= snmp_packet
 
     def __addPayload(self):
