@@ -24,6 +24,7 @@ from com.afdxsuite.scripts.Script020 import Script020
 from com.afdxsuite.scripts.Script021 import Script021
 from com.afdxsuite.scripts.Script022 import Script022
 from com.afdxsuite.scripts.Script023 import Script023
+from com.afdxsuite.scripts.Script024 import Script024
 from com.afdxsuite.logger import general_logger
 
 import sys, traceback
@@ -35,7 +36,7 @@ if __name__ == '__main__':
         while True:
             script = None
             try:
-                choice = raw_input("Please enter the script number (1 - 23) or"\
+                choice = raw_input("Please enter the script number (1 - 24) or"\
                                    " 0 to exit : ")
                 choice = int(choice)
                 if choice == 0:
