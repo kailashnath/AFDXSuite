@@ -19,6 +19,23 @@ class Script023(Script):
         self.input_ports = self.getPorts({}, ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
 
+    def sendSNMP(self, snmp_port, oids, snmp_type = 0):
+        mod_oids = []
+        for oid in oids:
+            oid = oid + ".0"
+            mod_oids.append(oid)
+        outport = Factory.WRITE(snmp_port.RX_AFDX_port_id, 
+                                reduce(lambda x,y : x + y, mod_oids))
+        setattr(outport, 'oids', mod_oids)
+
+        if snmp_type == 1:
+            setattr(outport, 'proto', 'SNMPnext')
+        else:
+            setattr(outport, 'proto', 'SNMP')
+
+        self.application.transmitter.transmit(outport, self.network)
+
+
     def sequence1(self):
         if len(self.sap_ports) == 0:
             self.logger.error("The ICD has no ports satisfying the sequence" \
@@ -63,7 +80,7 @@ class Script023(Script):
             self.sendSNMP(port, oid_8kb, 1)
 
     def sequence3(self):
-        if len(self.sap_ports) == 0:
+        if len(self.sap_ports) == 0 or len(self.input_ports) == 0:
             self.logger.error("The ICD has no ports satisfying the sequence" \
                               " criteria")
             return
@@ -76,16 +93,17 @@ class Script023(Script):
                 break
             for _ in range(0, 10):
                 port = self.input_ports[random.randint(0, 
-                                                       len(self.input_ports))]
+                                                    len(self.input_ports) - 1)]
                 message = buildShortMessage(port, message)
                 self.send(message, port)
+                if _%5 == 0:
+                    sap_port = sap_ports.pop()
+    
+                    oid_4kb = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
+                    getAFDXIPGroup() + getAFDXUDPGroup() + getAFDXESFailureGroup()
+                    oid_4kb = (oid_4kb * 6) + getAFDXUDPGroup()
+                    self.sendSNMP(sap_port, oid_4kb, 1)
 
-            sap_port = sap_ports.pop()
-
-            oid_4kb = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
-            getAFDXIPGroup() + getAFDXUDPGroup() + getAFDXESFailureGroup()
-            oid_4kb = (oid_4kb * 6) + getAFDXUDPGroup()
-            self.sendSNMP(sap_port, oid_4kb, 1)
 
     def sequence4(self):
         if len(self.sap_ports) == 0:

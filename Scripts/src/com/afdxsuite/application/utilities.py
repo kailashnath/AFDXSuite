@@ -211,12 +211,6 @@ def getMIBOID(oid_name, extra_id = None):
             
     return oid_value
 
-def get4KBOID():
-    oid_4kb = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
-            getAFDXIPGroup() + getAFDXUDPGroup() + getAFDXESFailureGroup()
-    oid_4kb = (oid_4kb * 6) + getAFDXUDPGroup()
-    return oid_4kb
-
 def getMIBOIDBySize(size):
     curr_size = 0
     oids = []

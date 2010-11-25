@@ -29,11 +29,14 @@ class ScriptReceiver(IReceiver):
                                    filename)
 
     def notify(self, packet):
-        if self.__filter != None:
-            if not self.__filter(packet):
-                return
-
-        self.__writer.write(packet)
+        try:
+            if self.__filter != None:
+                if not self.__filter(packet):
+                    return
+            if self.__writer != None:
+                self.__writer.write(packet)
+        except:
+            pass
 
     def setFilter(self, filterfunc):
         self.__filter = filterfunc
@@ -129,21 +132,6 @@ class Script(object):
         if poll:
             pollForResponse(message, timeout = 1)
 
-    def sendSNMP(self, snmp_port, oids, snmp_type = 0):
-        mod_oids = []
-        for oid in oids:
-            oid = oid + ".0"
-            mod_oids.append(oid)
-        outport = Factory.WRITE(snmp_port.RX_AFDX_port_id, 
-                                reduce(lambda x,y : x + y, mod_oids))
-        setattr(outport, 'oids', mod_oids)
-
-        if snmp_type == 1:
-            setattr(outport, 'proto', 'SNMPnext')
-        else:
-            setattr(outport, 'proto', 'SNMP')
-
-        self.application.transmitter.transmit(outport, self.network)
     def stop(self):
         self.logger.info("Stopping the script " + self.__scriptName)
         self.__receiver.stop()

@@ -5,6 +5,3 @@ NETWORK_AB = 'A&B'
 
 NETWORK_MULTICAST = "multicast"
 NETWORK_UNICAST = "unicast"
-
-SNMP_GET = 0
-SNMP_GETNext = 1
