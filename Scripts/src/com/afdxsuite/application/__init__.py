@@ -4,7 +4,7 @@ import ConfigParser
 import os
 import time
 
-PARENT_PATH = "../../../" 
+PARENT_PATH = "./" 
 CAPTURES_PARENT_DIRECTORY = PARENT_PATH + "captures/"
 LOGGER_PARENT_DIRECTORY = PARENT_PATH + "logs/"
 
