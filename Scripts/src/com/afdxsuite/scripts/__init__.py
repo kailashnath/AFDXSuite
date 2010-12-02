@@ -20,9 +20,12 @@ class ScriptReceiver(IReceiver):
         self.__scriptName = scriptName
 
     def start(self, seqno = 0):
-        filename = self.__scriptName
+
         if seqno > 0:
             filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
+        else:
+            filename = self.__scriptName + ".cap"
+
         if self.__writer != None:
             self.stop()
         self.__writer = PcapWriter(CAPTURES_PARENT_DIRECTORY + "/" + \
@@ -111,11 +114,13 @@ class Script(object):
         return filtered_ports
 
     def send(self, payload, ports):
+
         if type(ports) != list:
             ports = [ports]
 
         for port in ports:
             outport = Factory.WRITE(port.RX_AFDX_port_id, payload)
+
             self.application.transmitter.transmit(outport, self.network)
 
     def sendRSET(self, poll = True):

@@ -1,6 +1,5 @@
 from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_OUTPUT_VL, ICD_ICMP
-from com.afdxsuite.config.parsers.icdparser import CONFIG_ENTRIES, PORT_SAMPLING,\
-    ICD_AFDX_INPUT_VL
+from com.afdxsuite.config.parsers.icdparser import CONFIG_ENTRIES, PORT_SAMPLING
 from com.afdxsuite.application.properties import get
 
 PROCESSED_PORTS = {}
@@ -14,7 +13,6 @@ def __get_vl(vlId, dst_ip = None, dst_udp = None, port_id = None,
 
             if entry.vl_id == vlId: 
                 if port_id == None:
-#                    print entry.ip_dst, dst_ip, entry.udp_dst, dst_udp
                     if entry.ip_dst == dst_ip \
                         and entry.udp_dst == dst_udp:
                         return entry

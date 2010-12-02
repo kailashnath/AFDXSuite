@@ -62,7 +62,7 @@ class TransmitHandler(object):
         else:
             pdu = SNMPget(varbindlist = varbindlist)
 
-        snmp_packet = scapy.SNMP(community = "afdxRead", PDU = pdu)
+        snmp_packet = scapy.SNMP(community = "afdxRead", PDU = pdu, version = 0)
         #print "Packet length is ", len(reduce(lambda x,y : 
         #                                      str(x).replace('.', '') + 
         #                                      str(y).replace('.', ''), oids))
@@ -85,9 +85,8 @@ class TransmitHandler(object):
             self.__packet = [self.__packet]
 
     def __addPadding(self, packet):
-        if packet[SNMP] != None:
-            return packet
-            #payload_length = packet[UDP].len - 8
+        if packet.haslayer(SNMP):
+            payload_length = len(packet[SNMP])
         else:
             payload_length = len(packet[Raw])
 
@@ -152,6 +151,7 @@ class TransmitHandler(object):
             return packets
 
         self.__port = port
+
         self.__createPacket()
 
         if network == None:
@@ -173,6 +173,7 @@ class TransmitHandler(object):
 
     def transmit_packets(self, packets, network):
         for packet in packets:
+            packet = self.__addPadding(packet)
             if NETWORK_A in network:
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
                 sendp(packet, iface = get("NETWORK_INTERFACE_A"),

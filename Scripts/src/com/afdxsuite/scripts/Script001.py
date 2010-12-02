@@ -12,6 +12,7 @@ class Script001(Script):
         super(Script001, self).__init__("ITR-ES-001")
         self.network = application.network
         self.ports = Factory.GET_Ports(self.ports_filter, ICD_OUTPUT_VL)
+
         self.ports = self.remove_common_ports(self.ports)
         self.application = application
 

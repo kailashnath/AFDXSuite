@@ -104,5 +104,7 @@ def parseICD(filename):
 
             if p.valid:
                 obj_dict[mapping_key].append(p)
+    tx_details = "AFDX_INPUT_VL;port1;100;10;;A;BP;1;VLRXCMD;A&B;128;8192;Active;yes;65500;50025;;AFDX communication port;Queuing;yes;224.224.0.2;50025;8192;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
+    obj_dict[ICD_INPUT_VL].append(ICD_AFDX_INPUT_VL(tx_details.split(';')))
 
     CONFIG_ENTRIES = obj_dict
