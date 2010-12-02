@@ -42,6 +42,9 @@ if __name__ == '__main__':
                 choice = int(choice)
                 if choice == 0:
                     break
+                elif choice > 23 or choice < 0:
+                    general_logger.warning("Invalid option %d" % choice)
+                    continue
                 script = eval("Script%03d" % choice)(application)
                 script.run()
                 script.stop()
