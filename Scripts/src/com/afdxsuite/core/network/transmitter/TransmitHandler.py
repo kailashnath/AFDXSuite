@@ -187,8 +187,8 @@ class TransmitHandler(object):
 
         max_frame_size = 1472 if int(self.__port.max_frame_size) > 1472 else \
         int(self.__port.max_frame_size) 
-        if (packet[Raw] != None and  max_frame_size < len(packet[Raw].load)) or\
-        (packet[SNMP] != None and max_frame_size < len(packet[SNMP])):
+        if (packet.haslayer(Raw) and  max_frame_size < len(packet[Raw].load)) or\
+        (packet.haslayer(SNMP) and max_frame_size < len(packet[SNMP])):
             return fragment(packet, max_frame_size)
         else:
             return [packet]

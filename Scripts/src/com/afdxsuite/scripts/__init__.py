@@ -139,8 +139,8 @@ class Script(object):
 
     def stop(self):
         self.logger.info("Stopping the script " + self.__scriptName)
-        self.__receiver.stop()
         Receiver.deregister(self.__receiver, self.network)
+        self.__receiver.stop()
 
     def getMIBGroup(self, group_name, extra_id = None):
         oid_lst = []
