@@ -28,6 +28,8 @@ class TransmitHandler(object):
         ip_layer = IP()
         ip_layer.src = port.ip_src if hasattr(port, 'ip_src') else \
             get("TE_IP")
+        if port.ip_dst in ('', None):
+            port.ip_dst = get("TR_IP")
         ip_layer.dst = port.ip_dst
         ip_layer.id  = self._sn_handler.nextIpId()
         ip_layer.ttl = 1
