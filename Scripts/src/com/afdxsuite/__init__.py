@@ -4,7 +4,6 @@ from com.afdxsuite.scripts.Script001 import Script001
 from com.afdxsuite.scripts.Script002 import Script002
 from com.afdxsuite.scripts.Script003 import Script003
 from com.afdxsuite.scripts.Script004 import Script004
-
 from com.afdxsuite.scripts.Script005 import Script005
 from com.afdxsuite.scripts.Script006 import Script006
 from com.afdxsuite.scripts.Script008 import Script008
