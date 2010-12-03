@@ -26,7 +26,7 @@ class ICDPARSER(object):
 
                 i += 1
         else:
-            print 'invalid'
+            print 'Invalid icd entry found'
             self.valid = False
 
 class ICD_AFDX_OUTPUT_VL(ICDPARSER):

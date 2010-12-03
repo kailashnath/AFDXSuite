@@ -198,17 +198,9 @@ def getMIBOID(oid_name, extra_id = None):
         Returns the OID for the giving oid name
     """
     oid_value = conf.mib[oid_name]
-    if extra_id == None:
-        extra_id = 0
+    if extra_id != None:
+        oid_value += "." + str(extra_id)
 
-    # change last value od oid to extra_id
-    oid_value += "." + str(extra_id)
-
-    #Commented cause dead code
-#    else:
-#        if not oid_value.endswith('.0'):
-#            traceLog('table entry missing for %s' % oid_value, logging.WARNING, to_stdout = True)
-            
     return oid_value
 
 def getMIBOIDBySize(size):
@@ -217,13 +209,27 @@ def getMIBOIDBySize(size):
 
     while len(oids) < size:
         for key in conf.mib.keys():
+            suffix = ".0"
             oid = conf.mib[key]
+
+            if key in ['afdxEquipment', 'afdxMAC', 'afdxRedundancy', 'afdxIP', \
+                   'afdxICMP', 'afdxUDP', 'afdxTCP', 'afdxESFailure', \
+                   'afdxMACTable', 'afdxMACEntry', 'afdxRedundancyErrorTable',
+                   'afdxRedundancyStatsTable', 'afdxRedundancyErrorEntry',
+                   'afdxRedundancyStatsEntry', 'afdxEndSystem', 'airbus']:
+                continue
+
             if not 'enterprises' in oid:
                 continue
-            # we are adding 1 because while doing snmp get we will be adding
-            # trailer ".0"
-            curr_size += len(oid.replace('.', '')) + 1
 
-            if curr_size > size:
+            if str(key).find('afdxRedundancy') > -1 or \
+            str(key).find('afdxMAC') > -1:
+                suffix = ""
+            oid += suffix
+
+            curr_size += len(oid.replace('.', ''))
+
+            if len(oids) == size:
                 return oids
             oids.append(oid)
+    return oids

@@ -20,13 +20,9 @@ class Script023(Script):
         self.input_ports = self.remove_common_ports(self.input_ports)
 
     def sendSNMP(self, snmp_port, oids, snmp_type = 0):
-        mod_oids = []
-        for oid in oids:
-            oid = oid + ".0"
-            mod_oids.append(oid)
         outport = Factory.WRITE(snmp_port.RX_AFDX_port_id, 
-                                reduce(lambda x,y : x + y, mod_oids))
-        setattr(outport, 'oids', mod_oids)
+                                reduce(lambda x,y : x + y, oids))
+        setattr(outport, 'oids', oids)
 
         if snmp_type == 1:
             setattr(outport, 'proto', 'SNMPnext')
@@ -47,8 +43,8 @@ class Script023(Script):
             oids = getMIBOID('afdxEquipmentStatus')
             self.sendSNMP(port, [oids])
             
-            oids = [getMIBOID('afdxMACStatus', 0), 
-                    getMIBOID('afdxMACStatus', 1)] 
+            oids = [getMIBOID('afdxMACStatus', 1), 
+                    getMIBOID('afdxMACStatus', 2)] 
             self.sendSNMP(port, oids)
 
             oids = getAFDXEquipmentGroup() + getAFDXMACGroup()
