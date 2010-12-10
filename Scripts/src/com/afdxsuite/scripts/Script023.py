@@ -93,9 +93,7 @@ class Script023(Script):
                 if _%5 == 0:
                     sap_port = sap_ports.pop()
     
-                    oid_4kb = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
-                    getAFDXIPGroup() + getAFDXUDPGroup() + getAFDXESFailureGroup()
-                    oid_4kb = (oid_4kb * 6) + getAFDXUDPGroup()
+                    oid_4kb = getMIBOIDBySize(220)
                     self.sendSNMP(sap_port, oid_4kb, 1)
 
 
@@ -109,11 +107,7 @@ class Script023(Script):
         start = time.time()
         while True:
             for port in self.sap_ports:
-                oid_4kb = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
-                            getAFDXIPGroup() + getAFDXUDPGroup() + \
-                            getAFDXESFailureGroup()
-                oid_4kb = (oid_4kb * 6) + getAFDXUDPGroup()
-                oid_8kb = oid_4kb * 2
+                oid_8kb = getMIBOIDBySize(452)
                 self.logger.info("Sending SNMP whose size is nearly equal to "\
                                  "8KB sisze")
                 self.sendSNMP(port, oid_8kb, 1)

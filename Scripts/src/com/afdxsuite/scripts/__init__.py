@@ -36,9 +36,7 @@ class ScriptReceiver(IReceiver):
         time.sleep(1)
 
     def notify(self, packet):
-        if self.__writer == None:
-            return
-        elif self.__filter != None:
+        if self.__filter != None:
             if not self.__filter(packet):
                 return
         try:

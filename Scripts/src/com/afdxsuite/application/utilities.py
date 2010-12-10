@@ -1,9 +1,8 @@
 from com.afdxsuite.core.network.receiver.Receiver import IReceiver, Receiver
+from com.afdxsuite.core.network.scapy import conf
+from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING
 
 import time
-from com.afdxsuite.core.network import NETWORK_AB
-from com.afdxsuite.core.network.scapy import IP, UDP, Raw, conf
-from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING, PORT_SAMPLING
 
 command_poller = None
 
@@ -193,7 +192,7 @@ def getMIBGroup(group_name, extra_id = None):
     return oid_lst
     
 ################################################################################################################
-def getMIBOID(oid_name, extra_id = None):
+def getMIBOID(oid_name, extra_id = 0):
     """
         Returns the OID for the giving oid name
     """
@@ -204,7 +203,7 @@ def getMIBOID(oid_name, extra_id = None):
     return oid_value
 
 def getMIBOIDBySize(size):
-    curr_size = 0
+
     oids = []
 
     while len(oids) < size:
