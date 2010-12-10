@@ -4,8 +4,9 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.config import Factory
 from com.afdxsuite.application.utilities import getMIBOID, getAFDXEquipmentGroup,\
     getAFDXMACGroup, getAFDXIPGroup, getAFDXUDPGroup, getAFDXESFailureGroup,\
-    buildShortMessage
+    buildShortMessage, getMIBOIDBySize
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
+
 import random, copy, time
 
 class Script023(Script):
@@ -66,14 +67,11 @@ class Script023(Script):
             oid = getMIBOID('afdxEquipmentStatus')
             self.sendSNMP(port, [oid])
             
-            oid_4kb = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
-            getAFDXIPGroup() + getAFDXUDPGroup() + getAFDXESFailureGroup()
-            oid_4kb = (oid_4kb * 6) + getAFDXUDPGroup()
+            oids_4kb = getMIBOIDBySize(220)
+            oids_8kb = getMIBOIDBySize(452)
 
-            self.sendSNMP(port, oid_4kb, 1)
-            
-            oid_8kb = oid_4kb * 2
-            self.sendSNMP(port, oid_8kb, 1)
+            self.sendSNMP(port, oids_4kb, 1)
+            self.sendSNMP(port, oids_8kb, 1)
 
     def sequence3(self):
         if len(self.sap_ports) == 0 or len(self.input_ports) == 0:

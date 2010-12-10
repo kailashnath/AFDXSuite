@@ -17,6 +17,7 @@ class Script022(Script):
         msg = "ping test"
         msgs = [msg_8kb, msg_64kb, msg]
         for port in self.icmp_ports:
+            setattr(port, 'ip_src', get("NMF_IP"))
             for msg in msgs:
                 self.sendICMP(port, msg, False)
 
@@ -29,11 +30,15 @@ class Script022(Script):
 
     def sequence3(self):
         self.captureForSequence(3)
+
         msg_small = buildStaticMessage(63, "small message")
         for port in self.icmp_ports:
+            setattr(port, 'ip_src', get("NMF_IP"))
             self.sendICMP(port, msg_small, False)
+
         msg_big = buildStaticMessage(65, "big message")
         for port in self.icmp_ports:
+            setattr(port, 'ip_src', get("NMF_IP"))
             self.sendICMP(port, msg_big, False)
 
     def run(self):

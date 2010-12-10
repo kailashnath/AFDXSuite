@@ -1,5 +1,5 @@
 import ConfigParser
 
 config = ConfigParser.RawConfigParser()
-config.read("Application.config")
+config.read("conf/Application.config")
 print 'Config file initializeds'

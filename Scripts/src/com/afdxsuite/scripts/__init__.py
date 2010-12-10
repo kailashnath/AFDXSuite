@@ -7,9 +7,9 @@ from com.afdxsuite.config import Factory
 from com.afdxsuite.application.commands.RSET import RSET
 from com.afdxsuite.application.utilities import pollForResponse
 from com.afdxsuite.application.properties import get
-
-import os
 from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A
+
+import os, time
 
 class ScriptReceiver(IReceiver):
     __writer = None
@@ -20,34 +20,44 @@ class ScriptReceiver(IReceiver):
         self.__scriptName = scriptName
 
     def start(self, seqno = 0):
-
+        filename = self.__scriptName
         if seqno > 0:
             filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
         else:
             filename = self.__scriptName + ".cap"
-
         if self.__writer != None:
             self.stop()
-        self.__writer = PcapWriter(CAPTURES_PARENT_DIRECTORY + "/" + \
-                                   filename)
+        self.__captures = []
+
+        if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
+            os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
+        filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
+        self.__writer = PcapWriter(filename)
+        time.sleep(1)
 
     def notify(self, packet):
+        if self.__writer == None:
+            return
+        elif self.__filter != None:
+            if not self.__filter(packet):
+                return
         try:
-            if self.__filter != None:
-                if not self.__filter(packet):
-                    return
-            if self.__writer != None:
-                self.__writer.write(packet)
-        except:
-            pass
+            self.__captures.append(packet)
+        except Exception, ex:
+            general_logger.warning("Error at Script notify function : %s" % \
+                                   str(ex))
 
     def setFilter(self, filterfunc):
         self.__filter = filterfunc
 
     def stop(self):
+        time.sleep(1)
         if self.__writer != None:
+            self.__writer.write(self.__captures)
+            self.__writer.flush()
             self.__writer.close()
             self.__writer = None
+            self.__captures = None
 
 class Script(object):
     __receiver = None

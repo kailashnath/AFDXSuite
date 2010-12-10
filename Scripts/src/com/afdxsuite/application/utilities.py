@@ -212,22 +212,24 @@ def getMIBOIDBySize(size):
             suffix = ".0"
             oid = conf.mib[key]
 
-            if key in ['afdxEquipment', 'afdxMAC', 'afdxRedundancy', 'afdxIP', \
-                   'afdxICMP', 'afdxUDP', 'afdxTCP', 'afdxESFailure', \
+            if key in ['afdxEquipment', 'afdxMAC', 'afdxRedundancy', 'afdxIP',
+                   'afdxICMP', 'afdxUDP', 'afdxTCP', 'afdxESFailure',
                    'afdxMACTable', 'afdxMACEntry', 'afdxRedundancyErrorTable',
                    'afdxRedundancyStatsTable', 'afdxRedundancyErrorEntry',
-                   'afdxRedundancyStatsEntry', 'afdxEndSystem', 'airbus']:
+                   'afdxRedundancyStatsEntry', 'afdxEndSystem', 'airbus',
+                   'afdx', 'afdxEndSystemMIB', 'afdxESConformance',
+                   'afdxESGroups', 'afdxESCompliances']:
                 continue
 
             if not 'enterprises' in oid:
                 continue
 
             if str(key).find('afdxRedundancy') > -1 or \
-            str(key).find('afdxMAC') > -1:
-                suffix = ""
-            oid += suffix
+            str(key).find('afdxMAC') > -1 or str(key).find('afdxTCP') > -1:
+                #suffix = ".1"
+                continue
 
-            curr_size += len(oid.replace('.', ''))
+            oid += suffix
 
             if len(oids) == size:
                 return oids
