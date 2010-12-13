@@ -2,8 +2,8 @@ from com.afdxsuite.scripts import Script
 from com.afdxsuite.config.parsers import ICD_ICMP, ICD_INPUT_VL
 from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.config import Factory
-from com.afdxsuite.application.utilities import pollForResponse, \
-    buildStaticMessage, buildFragmentedMessage
+from com.afdxsuite.application.utilities import buildStaticMessage, \
+buildFragmentedMessage
 from com.afdxsuite.core.network.scapy import conf, ICMP
 from com.afdxsuite.application.properties import get
 

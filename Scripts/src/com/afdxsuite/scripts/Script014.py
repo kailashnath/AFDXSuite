@@ -7,6 +7,7 @@ from com.afdxsuite.application.commands.ERPQ import ERPQ
 from com.afdxsuite.config import Factory
 from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.application.commands.RRPC import RRPC
+
 import copy
 
 class Script014(Script):

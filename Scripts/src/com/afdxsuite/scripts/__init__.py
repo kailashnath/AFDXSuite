@@ -9,7 +9,8 @@ from com.afdxsuite.application.utilities import pollForResponse
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A
 
-import os, time
+import os
+import time
 
 class ScriptReceiver(IReceiver):
     __writer = None

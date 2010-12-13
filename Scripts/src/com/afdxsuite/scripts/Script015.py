@@ -2,13 +2,13 @@ from com.afdxsuite.scripts import Script
 from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_OUTPUT_VL
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B, NETWORK_AB
-import time
 from com.afdxsuite.application.commands.RRPC import RRPC
 from com.afdxsuite.config import Factory
 from com.afdxsuite.application.commands.EIPC import EIPC
 from com.afdxsuite.application.utilities import pollForResponse,\
     buildShortMessage
 
+import time
 
 class Script015(Script):
     application = None

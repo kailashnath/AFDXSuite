@@ -1,17 +1,16 @@
 from com.afdxsuite.scripts import Script
 from com.afdxsuite.core.network import NETWORK_AB
-
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
 from com.afdxsuite.application.commands.RRPC import RRPC
 from com.afdxsuite.application.utilities import buildShortMessage,\
     pollForResponse, buildBigMessage
 from com.afdxsuite.config import Factory
-
-import time
 from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING, PORT_QUEUING,\
     PORT_SAP
 from com.afdxsuite.application.commands.ESAP import ESAP
 from com.afdxsuite.application.properties import get
+
+import time
 
 class Script006(Script):
     application = None

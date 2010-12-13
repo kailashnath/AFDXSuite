@@ -2,8 +2,8 @@ from com.afdxsuite.scripts import Script
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B, NETWORK_AB
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
-from com.afdxsuite.application.utilities import buildMessage, buildStaticMessage,\
-    buildFragmentedMessage, pollForResponse
+from com.afdxsuite.application.utilities import buildFragmentedMessage, \
+pollForResponse
 from com.afdxsuite.config import Factory
 from com.afdxsuite.application.commands.RRPC import RRPC
 

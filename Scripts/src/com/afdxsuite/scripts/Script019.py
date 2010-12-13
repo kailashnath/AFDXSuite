@@ -3,8 +3,8 @@ from com.afdxsuite.config.parsers import ICD_OUTPUT_VL, ICD_INPUT_VL
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.scapy import conf
 from com.afdxsuite.config import Factory
-from com.afdxsuite.application.utilities import buildBigMessage,\
-    buildShortMessage, buildStaticMessage
+from com.afdxsuite.application.utilities import buildShortMessage, \
+buildStaticMessage
 from com.afdxsuite.application.commands.EIPC import EIPC
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.application.commands.RRPC import RRPC

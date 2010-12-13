@@ -5,7 +5,7 @@ from com.afdxsuite.application.utilities import buildShortMessage,\
     pollForResponse, buildFragmentedMessage
 from com.afdxsuite.application.commands.RRPC import RRPC
 from com.afdxsuite.config import Factory
-from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING, PORT_SAMPLING
+from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING
 
 class Script013(Script):
     application = None

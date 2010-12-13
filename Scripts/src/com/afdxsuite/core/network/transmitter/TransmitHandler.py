@@ -1,10 +1,9 @@
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B, scapy
 from com.afdxsuite.core.network.scapy import Ether, sendp, IP, UDP, Raw, ICMP,\
-    SNMP, Padding, fragment, SNMPvarbind, ASN1_OID, SNMPresponse, SNMPnext,\
+    SNMP, Padding, fragment, SNMPvarbind, ASN1_OID, SNMPnext,\
     SNMPget
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.utils import SequenceHandler
-from com.afdxsuite.application.utilities import i2h
 
 class TransmitHandler(object):
     __network = None

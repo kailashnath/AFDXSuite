@@ -1,7 +1,6 @@
 from com.afdxsuite.scripts import Script
 from com.afdxsuite.core.network import NETWORK_AB
-from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING, PORT_QUEUING,\
-    PORT_SAP
+from com.afdxsuite.config.parsers.icdparser import PORT_SAP
 from com.afdxsuite.config.parsers import ICD_OUTPUT_VL
 from com.afdxsuite.application.commands.EIPC import EIPC
 from com.afdxsuite.application.utilities import buildMessage, buildShortMessage,\

@@ -4,7 +4,9 @@ from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
 from com.afdxsuite.core.network.receiver.Receiver import Receiver
 from com.afdxsuite.logger import general_logger
 
-import threading, sys, traceback
+import threading
+import sys
+import traceback
 
 class ThreadExit(Exception):
     def __init__(self):

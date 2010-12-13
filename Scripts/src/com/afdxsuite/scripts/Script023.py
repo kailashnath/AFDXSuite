@@ -7,7 +7,9 @@ from com.afdxsuite.application.utilities import getMIBOID, getAFDXEquipmentGroup
     buildShortMessage, getMIBOIDBySize
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
 
-import random, copy, time
+import random
+import copy
+import time
 
 class Script023(Script):
     application = None
