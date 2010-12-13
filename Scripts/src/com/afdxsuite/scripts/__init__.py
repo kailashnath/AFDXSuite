@@ -44,6 +44,8 @@ class ScriptReceiver(IReceiver):
         except Exception, ex:
             general_logger.warning("Error at Script notify function : %s" % \
                                    str(ex))
+            general_logger.error("Error with capturing for script %s" % \
+                                 self.__scriptName)
 
     def setFilter(self, filterfunc):
         self.__filter = filterfunc

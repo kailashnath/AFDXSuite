@@ -1,15 +1,13 @@
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.airscapy import sniff
 from com.afdxsuite.core.network import NETWORK_A, NETWORK_B
-
-import threading, sys, traceback
 from com.afdxsuite.core.network.receiver.Receiver import Receiver
 from com.afdxsuite.logger import general_logger
-from com.afdxsuite.core.network.scapy import IP, UDP
+
+import threading, sys, traceback
 
 class ThreadExit(Exception):
     def __init__(self):
-
         super(Exception, self).__init__()
 
 class ReceiverThread(threading.Thread):
@@ -47,16 +45,16 @@ class ReceiverThread(threading.Thread):
             general_logger.info("The application will not listen for packets" +\
                                 " coming on network : " + self.__network)
             traceback.print_exc(file=sys.stdout)
+            general_logger.error("Crash", exc_info = 1)
 
     def kill(self):
         self.__stop = True
-
 
 class ReceiverHandler(object):
 
     __network_A = None
     __network_B = None
-    
+
     def __init__(self, network):
         
         if NETWORK_A in network:

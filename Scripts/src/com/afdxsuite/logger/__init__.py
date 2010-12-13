@@ -20,9 +20,9 @@ class Logger(object):
             self.script_logger.setLevel(logging.DEBUG)
     
             handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME,
-                                                           # 10KB file
-                                                           maxBytes = 10 * 1000,
-                                                           backupCount = 5)
+                                                       # 100KB file
+                                                       maxBytes = 100 * 1000,
+                                                       backupCount = 30)
             handler.setFormatter(formatter)
             self.script_logger.addHandler(handler)
             handler = logging.StreamHandler()

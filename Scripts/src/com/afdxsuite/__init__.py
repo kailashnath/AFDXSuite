@@ -39,10 +39,13 @@ if __name__ == '__main__':
             try:
                 choice = raw_input("Please enter the script number (1 - 24) or"\
                                    " 0 to exit : ")
+                if choice == "":
+                    continue
+
                 choice = int(choice)
                 if choice == 0:
                     break
-                elif choice > 24 or choice < 0:
+                elif choice > 24 or choice < 0 or choice == 7:
                     general_logger.warning("Invalid option %d" % choice)
                     continue
                 script = eval("Script%03d" % choice)(application)

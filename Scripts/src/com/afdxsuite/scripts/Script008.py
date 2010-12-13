@@ -18,6 +18,7 @@ class Script008(Script):
         self.input_port = self.remove_common_ports(self.input_port)
 
     def __sendicmp(self, port, message, poll = True):
+        self.logger.info("Sending an ICMP message on %s" % port.rx_vl_id)
         port = Factory.WRITE_ICMP(port.rx_vl_id, message)
         self.application.transmitter.transmit(port, self.network)
         if poll:
@@ -40,13 +41,13 @@ class Script008(Script):
         index = 0
         self.network = 'A'
         for port in self.input_port:
-            setattr(port, 'buffer_size', port.rx_vl_buff_size)
             message = buildShortMessage(port, "Background message")
             self.send(message, port)
             if index % 3 == 0:
-                for port in self.icmp_ports:
-                    message = buildMessage(port, 64)
-                    self.__sendicmp(port, message, poll = False)
+                for icmp_port in self.icmp_ports:
+                    setattr(icmp_port, 'buffer_size', icmp_port.rx_vl_buff_size)
+                    message = buildMessage(icmp_port, 64)
+                    self.__sendicmp(icmp_port, message, poll = False)
             index += 1
 
     def run(self):
