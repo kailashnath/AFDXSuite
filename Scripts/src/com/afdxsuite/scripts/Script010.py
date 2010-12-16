@@ -1,7 +1,7 @@
 from com.afdxsuite.scripts import Script
 from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING, PORT_QUEUING
-from com.afdxsuite.config.parsers import ICD_INPUT_VL
+from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_OUTPUT_VL
 from com.afdxsuite.application.utilities import buildStaticMessage, \
 pollForResponse
 from com.afdxsuite.application.commands.EIPC import EIPC
@@ -19,6 +19,10 @@ class Script010(Script):
                                           [PORT_SAMPLING, PORT_QUEUING]},
                                           ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
+        self.output_ports = self.getPorts({'port_characteristic' : \
+                                          [PORT_SAMPLING, PORT_QUEUING]},
+                                          ICD_OUTPUT_VL)
+        self.output_ports = self.remove_common_ports(self.output_ports)
 
     def sequence1(self):
         if len(self.input_ports) == 0:
@@ -27,7 +31,7 @@ class Script010(Script):
             return
         self.captureForSequence(1)
         self.sendRSET()
-        for port in self.input_ports:
+        for port in self.output_ports:
             if port.ip_frag_allowed:
                 continue
             eipc = EIPC(port)
@@ -35,6 +39,8 @@ class Script010(Script):
                                          "MFS + 1")
             self.send(eipc.buildCommand(message = message), \
                       Factory.GET_TX_Port())
+            self.logger.info("Sending an EIPC command on port : %s" % \
+                             port.tx_AFDX_port_id)
             pollForResponse('EIPC')
 
     def sequence2(self):

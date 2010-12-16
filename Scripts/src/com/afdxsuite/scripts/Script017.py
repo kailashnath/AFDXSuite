@@ -75,7 +75,6 @@ class Script017(Script):
             message = buildFragmentedMessage(port, 2, "Fragmented")
             count = 150
             while count > 0:
-                print port.rx_vl_id
                 outport = Factory.WRITE_ICMP(port.rx_vl_id, message)
                 packet = self.application.transmitter.transmit(outport, 
                                                                 self.network,

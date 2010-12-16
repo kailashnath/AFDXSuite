@@ -37,9 +37,9 @@ class Script024(Script):
             oids_8kb = getMIBOIDBySize(452)
             self.logger.info("Sending an SNMP get request")
             self.sendSNMP(rxPort, [oid_1])
-            self.logger.info("Sending an SNMP get next request of size ~4Ko")
+            self.logger.info("Sending an SNMP get-next request of size ~4Ko")
             self.sendSNMP(rxPort, oids_4kb, 1)
-            self.logger.info("Sending an SNMP get next request of size ~8Ko")
+            self.logger.info("Sending an SNMP get-next request of size ~8Ko")
             self.sendSNMP(rxPort, oids_8kb, 1)
 
         self.logger.info("SNMP Traps should be captured in the background "\

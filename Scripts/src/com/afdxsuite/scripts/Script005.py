@@ -40,8 +40,12 @@ class Script005(Script):
             message = "Short message"
             messages = []
             messages.append(buildShortMessage(port, message, command_size))
-            messages.append(buildMessage(port, (int(port.buffer_size)/2) - command_size, message))
-            messages.append(buildMessage(port, int(port.buffer_size) - command_size, message))
+            messages.append(buildMessage(port, 
+                                     (int(port.buffer_size)/2) - command_size, 
+                                     message))
+            messages.append(buildMessage(port,
+                                        int(port.buffer_size) - command_size,
+                                        message))
             for message in messages:
                 command = cmd.buildCommand(command = 'SEND', message = message)
                 self.send(command, Factory.GET_TX_Port())

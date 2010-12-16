@@ -18,6 +18,7 @@ class Script022(Script):
         msgs = [msg_8kb, msg_64kb, msg]
         for port in self.icmp_ports:
             setattr(port, 'ip_src', get("NMF_IP"))
+            self.logger.info("Sending an ICMP from NMF ip : %s" % get("NMF_IP"))
             for msg in msgs:
                 self.sendICMP(port, msg, False)
 
@@ -26,6 +27,7 @@ class Script022(Script):
         msg = "Loopback ping"
         for port in self.icmp_ports:
             setattr(port, 'ip_src', get("TE_IP"))
+            self.logger.info("Sending ICMP from TE with ip %s" % get("TE_IP"))
             self.sendICMP(port, msg, False)
 
     def sequence3(self):
@@ -34,11 +36,15 @@ class Script022(Script):
         msg_small = buildStaticMessage(63, "small message")
         for port in self.icmp_ports:
             setattr(port, 'ip_src', get("NMF_IP"))
+            self.logger.info("Sending an ICMP from NMF ip : %s with "\
+                             "small message" % get("NMF_IP"))
             self.sendICMP(port, msg_small, False)
 
         msg_big = buildStaticMessage(65, "big message")
         for port in self.icmp_ports:
             setattr(port, 'ip_src', get("NMF_IP"))
+            self.logger.info("Sending an ICMP from NMF ip : %s with "\
+                             "big message" % get("NMF_IP"))
             self.sendICMP(port, msg_big, False)
 
     def run(self):

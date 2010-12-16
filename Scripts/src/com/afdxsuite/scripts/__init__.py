@@ -10,31 +10,30 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A
 
 import os
+import sys
 import time
+import traceback
 
 class ScriptReceiver(IReceiver):
     __writer = None
     __filter = None
     __scriptName = None
+    __filename = None
 
     def __init__(self, scriptName):
         self.__scriptName = scriptName
 
     def start(self, seqno = 0):
+        if self.__writer != None:
+            self.stop()
         filename = self.__scriptName
         if seqno > 0:
             filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
         else:
             filename = self.__scriptName + ".cap"
-        if self.__writer != None:
-            self.stop()
-        self.__captures = []
 
-        if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
-            os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
-        filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
-        self.__writer = PcapWriter(filename)
-        time.sleep(1)
+        self.__filename = filename
+        self.__captures = []
 
     def notify(self, packet):
         if self.__filter != None:
@@ -52,13 +51,26 @@ class ScriptReceiver(IReceiver):
         self.__filter = filterfunc
 
     def stop(self):
+        filename = self.__filename
+
+        if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
+            os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
+        filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
+
         time.sleep(1)
-        if self.__writer != None:
+        try:
+            self.__writer = PcapWriter(filename)
             self.__writer.write(self.__captures)
             self.__writer.flush()
             self.__writer.close()
-            self.__writer = None
-            self.__captures = None
+        except Exception, ex:
+            general_logger.error("Could not write to capture file from script" \
+                                 " receiver handler : %s" % str(ex))
+            general_logger.error("Crash", exc_info = 1)
+            traceback.print_exc(file = sys.stdout)
+            
+        self.__writer = None
+        self.__captures = None
 
 class Script(object):
     __receiver = None
@@ -140,7 +152,8 @@ class Script(object):
         if not poll:
             return
         if not pollForResponse('OK'):
-            self.logger.error("The ES has not responded to RSET")
+            self.logger.warn("The ES has not responded to RSET")
+
 
     def sendICMP(self, port, message, poll = True):
         port = Factory.WRITE_ICMP(port.rx_vl_id, message)

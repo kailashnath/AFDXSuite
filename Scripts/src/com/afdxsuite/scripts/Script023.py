@@ -47,14 +47,21 @@ class Script023(Script):
             self.sendSNMP(port, [oids])
             
             oids = [getMIBOID('afdxMACStatus', 1), 
-                    getMIBOID('afdxMACStatus', 2)] 
+                    getMIBOID('afdxMACStatus', 2)]
+            self.logger.info("Sending an SNMP request with afdxMacStatus as "\
+                             "oid")
             self.sendSNMP(port, oids)
 
             oids = getAFDXEquipmentGroup() + getAFDXMACGroup()
+            self.logger.info("Sending an SNMP request with afdxEquipmentGroup" \
+                             " and afdxMACGroup as oids")
             self.sendSNMP(port, oids)
             
             oids = getAFDXEquipmentGroup() + getAFDXMACGroup() + \
             getAFDXIPGroup() + getAFDXUDPGroup() + getAFDXESFailureGroup()
+            self.logger.info("Sending an SNMP request with " \
+                             "afdxEquipmentGroup, afdxMACGroup, afdxIPGroup," \
+                             "afdxUDPGroup, afdxESFailureGroup as oids")
             self.sendSNMP(port, oids)
 
 
@@ -67,13 +74,19 @@ class Script023(Script):
         self.sendRSET()
         for port in self.sap_ports:
             oid = getMIBOID('afdxEquipmentStatus')
+            self.logger.info("Sending SNMP request with afdxEquipmentStatus " \
+                             "as oid")
             self.sendSNMP(port, [oid])
             
             oids_4kb = getMIBOIDBySize(220)
             oids_8kb = getMIBOIDBySize(452)
 
             self.sendSNMP(port, oids_4kb, 1)
+            self.logger.info("Sending an SNMP get-next request for oids worth "\
+                             "~4KB size")
             self.sendSNMP(port, oids_8kb, 1)
+            self.logger.info("Sending an SNMP get-next request for oids worth "\
+                             "~8KB size")
 
     def sequence3(self):
         if len(self.sap_ports) == 0 or len(self.input_ports) == 0:
@@ -98,7 +111,6 @@ class Script023(Script):
                     oid_4kb = getMIBOIDBySize(220)
                     self.sendSNMP(sap_port, oid_4kb, 1)
 
-
     def sequence4(self):
         if len(self.sap_ports) == 0:
             self.logger.error("The ICD has no ports satisfying the sequence" \
@@ -111,7 +123,7 @@ class Script023(Script):
             for port in self.sap_ports:
                 oid_8kb = getMIBOIDBySize(452)
                 self.logger.info("Sending SNMP whose size is nearly equal to "\
-                                 "8KB sisze")
+                                 "8KB size")
                 self.sendSNMP(port, oid_8kb, 1)
             if time.time() - start > 10:
                 break

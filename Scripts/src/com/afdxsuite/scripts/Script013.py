@@ -39,11 +39,12 @@ class Script013(Script):
 
                 outport = Factory.WRITE(port.RX_AFDX_port_id, message)
                 setattr(outport, 'sn_func', self.sn_modifier)
-
                 self.application.transmitter.transmit(outport, network)
+                self.logger.info("Filling rx port : %s" % port.RX_AFDX_port_id)
                 rrpc = RRPC(port)
                 self.network = NETWORK_A
                 self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
+                self.logger.info("Sending an RRPC on network %s" % self.network)
                 pollForResponse('RRPC')
 
     def send_modified_snfragments(self, ports, networks):
@@ -54,9 +55,11 @@ class Script013(Script):
             outport = Factory.WRITE(port.RX_AFDX_port_id, message)
             setattr(outport, 'sn_func', self.sn_modifier)
             self.application.transmitter.transmit(outport, networks)
+            self.logger.info("Filling rx port : %s" % port.RX_AFDX_port_id)
             rrpc = RRPC(port)
             self.network = NETWORK_A
             self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
+            self.logger.info("Sending an RRPC on network %s" % self.network)
             pollForResponse('RRPC')
 
     def sequence1(self):
@@ -67,6 +70,7 @@ class Script013(Script):
         self.captureForSequence(1)
         self.sendRSET()
         for port in self.input_ports:
+            self.logger.info("Filling rx port : %s" % port.RX_AFDX_port_id)
             for network in [NETWORK_AB, NETWORK_A, NETWORK_B]:
                 message = "PortId = %s %s" % (port.RX_AFDX_port_id, network)
                 message = buildShortMessage(port, message)
@@ -76,6 +80,7 @@ class Script013(Script):
                 rrpc = RRPC(port)
                 self.network = NETWORK_A
                 self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
+                self.logger.info("Sending an RRPC on network %s" % network)
                 pollForResponse('RRPC')
 
     def sequence2(self):

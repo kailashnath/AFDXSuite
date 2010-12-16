@@ -3,8 +3,8 @@ from com.afdxsuite.core.network.scapy import conf
 from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING
 
 import time
-
-command_poller = None
+from com.afdxsuite.core.network import NETWORK_A
+from com.afdxsuite.logger import general_logger
 
 # MIB CONSTANTS
 MIB_MAC_GROUP         = "afdxMAC"
@@ -33,6 +33,10 @@ class ResponsePoller(IReceiver):
                         self.status = True
         except Exception, ex:
             print ex
+
+command_poller = ResponsePoller()
+Receiver.register(command_poller, NETWORK_A)
+general_logger.info("Command poller initialized.......")
 
 def h2i(value):
     if type(value) == str:
@@ -143,21 +147,21 @@ def buildFragmentedMessage(port, noofFragments, message = ""):
 
 
 ################################################################################
-def getAFDXEquipmentGroup(extra_id = None):
+def getAFDXEquipmentGroup(extra_id = 0):
     """
         Returns the oid list for AFDX Equipment Group
     """
     return getMIBGroup(MIB_EQUIPMENT_GROUP, extra_id)
 
 ################################################################################################################
-def getAFDXESFailureGroup(extra_id = None):
+def getAFDXESFailureGroup(extra_id = 0):
     """
         Returns the oid list for AFDX ES Failure Group
     """
     return getMIBGroup(MIB_ES_FAILURE_GROUP, extra_id)
 
 ################################################################################################################
-def getAFDXIPGroup(extra_id = None):
+def getAFDXIPGroup(extra_id = 0):
     """
         Returns the oid list for AFDX IP Group
     """
@@ -171,7 +175,7 @@ def getAFDXMACGroup(extra_id = 1):
     return getMIBGroup(MIB_MAC_GROUP, extra_id)
 
 ################################################################################################################
-def getAFDXUDPGroup(extra_id = None):
+def getAFDXUDPGroup(extra_id = 0):
     """
         Returns the oid list for AFDX UDP Group
     """
@@ -224,7 +228,8 @@ def getMIBOIDBySize(size):
                 continue
 
             if str(key).find('afdxRedundancy') > -1 or \
-            str(key).find('afdxMAC') > -1 or str(key).find('afdxTCP') > -1:
+            str(key).find('afdxMAC') > -1 or str(key).find('afdxTCP') > -1 or \
+            str(key).find('afdxESFailure') > -1:
                 #suffix = ".1"
                 continue
 

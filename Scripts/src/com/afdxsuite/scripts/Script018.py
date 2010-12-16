@@ -21,6 +21,10 @@ class Script018(Script):
         self.application.transmitter.transmit(outport, self.network)
 
     def run(self):
+        if len(self.snmp_ports) < 1:
+            self.logger.info("There are no entries in the ICD file satisfying "\
+                             "the scripts criteria.")
+            return
         self.sendRSET()
         for port in self.snmp_ports:
             self.sendWrongSNMP(port)
