@@ -47,7 +47,7 @@ class Script014(Script):
                 outport = Factory.WRITE(port.RX_AFDX_port_id, message)
                 setattr(port, 'sn_func', self.sn_func)
                 self.application.transmitter.transmit(outport, self.network)
-    
+                delattr(port, 'sn_func')
                 rrpc = RRPC(port)
                 self.send(rrpc.buildCommand(), Factory.GET_TX_Port())
                 pollForResponse('RRPC')

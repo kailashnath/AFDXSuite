@@ -1,10 +1,10 @@
 from com.afdxsuite.core.network.receiver.Receiver import IReceiver, Receiver
 from com.afdxsuite.core.network.scapy import conf
 from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING
-
-import time
 from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.logger import general_logger
+
+import time
 
 # MIB CONSTANTS
 MIB_MAC_GROUP         = "afdxMAC"
@@ -194,7 +194,7 @@ def getMIBGroup(group_name, extra_id = None):
 
     oid_lst.sort()
     return oid_lst
-    
+
 ################################################################################################################
 def getMIBOID(oid_name, extra_id = 0):
     """

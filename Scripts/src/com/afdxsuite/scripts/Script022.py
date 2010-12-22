@@ -10,6 +10,11 @@ class Script022(Script):
         super(Script022, self).__init__("ITR-ES-022", has_sequences = True)
         self.icmp_ports = self.getPorts({}, ICD_ICMP)
 
+        if len(self.icmp_ports) == 0:
+            self.logger.warning("The ICD has no ports satisfying the scripts" \
+                                " criteria. Exiting from the script")
+            return
+
     def sequence1(self):
         self.captureForSequence(1)
         msg_8kb = buildStaticMessage(8192, "Message size = 8192")

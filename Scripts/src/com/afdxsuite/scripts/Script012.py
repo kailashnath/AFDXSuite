@@ -37,3 +37,4 @@ class Script012(Script):
         tcrq = TCRQ()
         self.logger.info("Seding a TCRQ for %d times" % 2)
         self.send(tcrq.buildCommand(2), Factory.GET_TX_Port())
+        raw_input("Press enter key to continue.....")

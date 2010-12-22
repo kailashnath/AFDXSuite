@@ -11,7 +11,7 @@ class Script002(Script):
 
     def __init__(self, application):
         self.application = application
-        super(Script002, self).__init__("ITR-ES-002")
+        super(Script002, self).__init__("ITR-ES-002", has_sequences = True)
 
         self.input_ports = self.getPorts({'network_id' : application.network,
                                           'port_characteristic' : \
@@ -29,13 +29,15 @@ class Script002(Script):
             self.send(message, port)
 
     def sequence1(self):
-        self.sendRSET()
 
-        self.__fillRxPorts(self.input_ports)
         if len(self.input_ports) == 0:
             self.logger.info("There are no ports in the ICD satisfying the " \
                              "scripts criteria")
             return
+        self.captureForSequence(1)
+        self.sendRSET()
+        self.__fillRxPorts(self.input_ports)
+
         for port in self.input_ports:
             rrpc = RRPC(port)
             self.logger.info("Sending RRPC for port = %s" % \
@@ -44,7 +46,6 @@ class Script002(Script):
         
             if not pollForResponse("RRPC"):
                 self.logger.error("The ES has not responded for RRPC")
-
 
     def sequence2(self):
         ports = {}
@@ -67,7 +68,7 @@ class Script002(Script):
             self.logger.info("Sequence 2 cannot proceed. ICD has no ports "\
                              "satisfying the script requirements")
             return
-
+        self.captureForSequence(2)
         self.sendRSET()
 
         for key in ports.keys():

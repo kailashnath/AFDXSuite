@@ -19,23 +19,32 @@ class ScriptReceiver(IReceiver):
     __filter = None
     __scriptName = None
     __filename = None
+    __lockOnCapture = False
+    __captures = None
 
     def __init__(self, scriptName):
         self.__scriptName = scriptName
+        print 'Initialising receiver for script : %s' % scriptName
 
     def start(self, seqno = 0):
-        if self.__writer != None:
+
+        if seqno > 0:
             self.stop()
-        filename = self.__scriptName
+
+        self.__captures = []
         if seqno > 0:
             filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
         else:
             filename = self.__scriptName + ".cap"
 
         self.__filename = filename
-        self.__captures = []
+        self.__lockOnCapture = False
 
     def notify(self, packet):
+
+        if self.__lockOnCapture:
+            return
+
         if self.__filter != None:
             if not self.__filter(packet):
                 return
@@ -51,26 +60,28 @@ class ScriptReceiver(IReceiver):
         self.__filter = filterfunc
 
     def stop(self):
-        filename = self.__filename
 
-        if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
-            os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
-        filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
-
-        time.sleep(1)
         try:
-            self.__writer = PcapWriter(filename)
-            self.__writer.write(self.__captures)
-            self.__writer.flush()
-            self.__writer.close()
+            if self.__captures != None and len(self.__captures) > 0:
+
+                filename = self.__filename
+                if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
+                        os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
+                filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
+                time.sleep(1)
+                self.__writer = PcapWriter(filename)
+                self.__lockOnCapture = True
+                self.__writer.write(self.__captures)
+                self.__writer.flush()
+                self.__writer.close()
         except Exception, ex:
             general_logger.error("Could not write to capture file from script" \
                                  " receiver handler : %s" % str(ex))
             general_logger.error("Crash", exc_info = 1)
             traceback.print_exc(file = sys.stdout)
-            
-        self.__writer = None
-        self.__captures = None
+        finally:            
+            self.__writer = None
+            self.__captures = None
 
 class Script(object):
     __receiver = None

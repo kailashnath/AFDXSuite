@@ -23,11 +23,13 @@ class Script001(Script):
         return False
 
     def run(self):
-        self.sendRSET()
+
         if len(self.ports) == 0:
             self.logger.info("There are no ports in the ICD satisfying the " \
                              "scripts criteria")
             return
+        self.sendRSET()
+
         for port in self.ports:
             eipc = EIPC(port)
             message = "PortId = %s" % port.tx_AFDX_port_id
