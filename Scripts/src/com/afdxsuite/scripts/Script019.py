@@ -56,7 +56,6 @@ class Script019(Script):
         
     def sequence2(self):
         self.captureForSequence(2)
-        self.sendRSET()
         seq_port = None
 
         for port in self.output_ports:
@@ -67,6 +66,8 @@ class Script019(Script):
             self.logger.error("There is no port in the ICD satisfying the "\
                               "sequence criteria")
             return
+
+        self.sendRSET()
         snmp_port = self.snmp_ports[0]
         self.doOperation(seq_port, snmp_port)
 
@@ -97,7 +98,7 @@ class Script019(Script):
 
     def run(self):
         self.logger.info("Starting sequence 1")
-        self.sequence3()
+        self.sequence1()
         self.logger.info("Completed sequence 1")
         self.logger.info("Starting sequence 2")
         self.sequence2()

@@ -14,7 +14,8 @@ class Script017(Script):
         self.network = NETWORK_A
         super(Script017, self).__init__('ITR-ES-017', has_sequences = True)
         self.icmp_ports  = self.getPorts({}, ICD_ICMP)
-        self.snmp_ports = self.getPorts({'udp_dst' : int(get('SNMP_UDP_PORT'))}, \
+        self.snmp_ports = self.getPorts(
+                                    {'udp_dst' : int(get('SNMP_UDP_PORT'))}, \
                                         ICD_INPUT_VL)
         map(lambda port : setattr(port, 'buffer_size', \
                                                     port.rx_vl_buff_size),\
@@ -34,7 +35,6 @@ class Script017(Script):
     def sequence1(self):
         self.captureForSequence(1)
         self.sendRSET(poll = True)
-
         sizes = (64, 65, 80)
         for port in self.icmp_ports:
             for size in sizes:

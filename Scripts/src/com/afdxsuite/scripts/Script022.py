@@ -31,8 +31,8 @@ class Script022(Script):
         self.captureForSequence(2)
         msg = "Loopback ping"
         for port in self.icmp_ports:
-            setattr(port, 'ip_src', get("TE_IP"))
-            self.logger.info("Sending ICMP from TE with ip %s" % get("TE_IP"))
+            setattr(port, 'ip_src', port.dest_ip)
+            self.logger.info("Sending ICMP from TE with ip %s" % port.dest_ip)
             self.sendICMP(port, msg, False)
 
     def sequence3(self):

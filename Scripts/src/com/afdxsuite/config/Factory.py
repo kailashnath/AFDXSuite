@@ -136,8 +136,9 @@ def GET_Port_Output(portId):
     return __get_port(portId, ICD_OUTPUT_VL)
 
 def GET_TX_Port():
-    def filter(packet):
-        if packet.vl_id == 1:
+    def filter(port):
+
+        if port.vl_id == 1 and port.port_characteristic != PORT_SAMPLING:
             return True
         return False
 

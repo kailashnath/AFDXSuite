@@ -12,8 +12,8 @@ class Script002(Script):
     def __init__(self, application):
         self.application = application
         super(Script002, self).__init__("ITR-ES-002", has_sequences = True)
-
-        self.input_ports = self.getPorts({'network_id' : application.network,
+        self.network = application.network
+        self.input_ports = self.getPorts({'network_id' : self.network,
                                           'port_characteristic' : \
                                           [PORT_SAMPLING, PORT_QUEUING]},
                                          ICD_INPUT_VL)

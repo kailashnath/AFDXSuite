@@ -30,7 +30,7 @@ class Script024(Script):
             self.logger.error("The ICD has no ports satisfying the sequence" \
                               " criteria")
             return
-        self.sendRSET(True)
+        self.sendRSET()
         for rxPort in self.snmp_ports:
             oid_1 = getMIBOID('afdxEquipmentStatus')
             oids_4kb = getMIBOIDBySize(220)

@@ -34,6 +34,7 @@ class Script016(Script):
         if len(self.input_ports) == 0:
             self.logger.error("The ICD has no ports satisfying the scripts "\
                               "criteria")
+        self.sendRSET()
         port = self.input_ports[0]
         erpq = ERPQ(port)
         self.send(erpq.buildCommand(), Factory.GET_TX_Port())

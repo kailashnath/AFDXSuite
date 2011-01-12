@@ -159,6 +159,7 @@ class Script(object):
 
     def sendRSET(self, poll = True):
         rset = RSET()
+        self.logger.info("Sent an RSET command")
         self.send(rset.buildCommand(), Factory.GET_TX_Port())
         if not poll:
             return
@@ -174,7 +175,7 @@ class Script(object):
 
     def stop(self):
         self.logger.info("Stopping the script " + self.__scriptName)
-        Receiver.deregister(self.__receiver, self.network)
+        Receiver.deregister(self.__receiver, NETWORK_AB)
         self.__receiver.stop()
 
     def getMIBGroup(self, group_name, extra_id = None):

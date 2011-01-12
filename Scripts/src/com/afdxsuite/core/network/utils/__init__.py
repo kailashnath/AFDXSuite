@@ -12,7 +12,7 @@ class SequenceHandler(object):
     def next(self, vlId):
         sn = self.__current_sn[vlId] if self.__current_sn.has_key(vlId) else -1
 
-        if sn > 255:
+        if sn >= 255:
             sn = 1
         else:
             sn += 1

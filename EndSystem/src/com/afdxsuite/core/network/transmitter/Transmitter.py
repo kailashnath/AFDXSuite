@@ -93,7 +93,7 @@ class Transmitter(object):
         self.__normalize()
 
     def transmit(self, port, network):
-        print port
+
         self.__port = port
         self.__createPacket()
         time.sleep(0.5)

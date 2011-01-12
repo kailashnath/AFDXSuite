@@ -27,8 +27,12 @@ class TransmitHandler(object):
         ip_layer = IP()
         ip_layer.src = port.ip_src if hasattr(port, 'ip_src') else \
             get("TE_IP")
-        if port.ip_dst in ('', None):
+
+        if hasattr(port, 'dest_ip'):
+            port.ip_dst = port.dest_ip
+        elif port.ip_dst in ('', None):
             port.ip_dst = get("TR_IP")
+
         ip_layer.dst = port.ip_dst
         ip_layer.id  = self._sn_handler.nextIpId()
         ip_layer.ttl = 1
@@ -98,6 +102,9 @@ class TransmitHandler(object):
 
         if payload_length < 17:
             padding = '\0' * (17 - payload_length)
+
+        if (len(packet) + len(padding)) < 59:
+            padding += '\0' * (59 - (len(packet) + len(padding)))
 
         if hasattr(self.__port, 'sn_func'):
             sn = self.__port.sn_func(self.__port.vl_id)
