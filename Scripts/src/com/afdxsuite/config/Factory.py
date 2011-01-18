@@ -138,7 +138,10 @@ def GET_Port_Output(portId):
 def GET_TX_Port():
     def filter(port):
 
-        if port.vl_id == 1 and port.port_characteristic != PORT_SAMPLING:
+        if str(port.vl_id) == get('TE_TX_VL') and \
+        port.port_characteristic != PORT_SAMPLING:
+            port.ip_dst = get('TR_IP')
+
             return True
         return False
 

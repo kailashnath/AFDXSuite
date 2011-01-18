@@ -68,7 +68,7 @@ class ScriptReceiver(IReceiver):
                 if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
                         os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
                 filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
-                time.sleep(1)
+                time.sleep(2)
                 self.__writer = PcapWriter(filename)
                 self.__lockOnCapture = True
                 self.__writer.write(self.__captures)
@@ -163,8 +163,11 @@ class Script(object):
         self.send(rset.buildCommand(), Factory.GET_TX_Port())
         if not poll:
             return
+
         if not pollForResponse('OK'):
-            self.logger.warn("The ES has not responded to RSET")
+            pass
+        #   removed as per fabienne's request on Jan 18
+        #   self.logger.warn("The ES has not responded to RSET")
 
 
     def sendICMP(self, port, message, poll = True):

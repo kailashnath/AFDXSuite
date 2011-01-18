@@ -49,8 +49,9 @@ class Script015(Script):
         tx_port = tx_ports[0]
         return (rx_port, tx_port)
 
-    def sequence1(self):
-        self.captureForSequence(1)
+    def sequence1(self, capture = True):
+        if capture:
+            self.captureForSequence(1)
         if len(self.input_ports) == 0:
             self.logger.error("The ICD has no ports satisfying the scripts "\
                               "criteria")
@@ -80,17 +81,21 @@ class Script015(Script):
     def sequence2(self):
         self.captureForSequence(2)
         raw_input("Do a hard reset of the ES and press any key to continue")
-        self.sequence1()
+        self.sequence1(capture = False)
 
     def sequence3(self):
         self.captureForSequence(3)
-        raw_input('Disconnect A network physically and press enter to continue')
+        raw_input("Reconnect network B then disconnect network A and press "\
+         "enter to continue")
+        # raw_input('Disconnect A network physically and press enter to continue')
         rx_port, tx_port = self.getrxtxports()
         self.sendOnDisconnectedInterface(rx_port, tx_port)
 
     def sequence4(self):
         self.captureForSequence(4)
-        raw_input('Disconnect B network physically and press enter to continue')
+        raw_input("Reconnect network A then disconnect network B and press "\
+         "enter to continue")
+        # raw_input('Disconnect B network physically and press enter to continue')
         rx_port, tx_port = self.getrxtxports()
         self.sendOnDisconnectedInterface(rx_port, tx_port)
 
