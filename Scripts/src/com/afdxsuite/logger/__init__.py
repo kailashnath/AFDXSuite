@@ -16,12 +16,13 @@ class Logger(object):
             self.script_logger = self.loggers[logger_name]
         else:
             self.script_logger = logging.getLogger(logger_name)
-            formatter  = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            formatter  = logging.Formatter("%(asctime)s - %(name)s - " \
+                                           "%(levelname)s - %(message)s")
             self.script_logger.setLevel(logging.DEBUG)
     
             handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME,
-                                                       # 100KB file
-                                                       maxBytes = 100 * 1000,
+                                                       # 1MB file
+                                                       maxBytes = 1000 * 1000,
                                                        backupCount = 30)
             handler.setFormatter(formatter)
             self.script_logger.addHandler(handler)

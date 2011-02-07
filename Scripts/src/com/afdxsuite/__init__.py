@@ -24,16 +24,22 @@ from com.afdxsuite.scripts.Script022 import Script022
 from com.afdxsuite.scripts.Script023 import Script023
 from com.afdxsuite.scripts.Script024 import Script024
 
+from com.afdxsuite.application.analyzer.CaptureAnalyzer import Analyzer
+
 import time
 
 from com.afdxsuite.logger import general_logger
 
 import sys, traceback
 
+ANALYSIS_FILENAME = "/home/robuntu/Releases/7jan/captures/07 Jan 2011/14_26/ITR-ES-016.cap"
+
 if __name__ == '__main__':
     application = Application(NETWORK_AB)
     try:
-        application.boot()
+        # this is removed as we have resorted to capturing the packets
+        # externally via scripts
+        #application.boot()
         while True:
             script = None
             try:
@@ -45,7 +51,11 @@ if __name__ == '__main__':
                 choice = int(choice)
                 if choice == 0:
                     break
-                elif choice > 24 or choice < 0 or choice == 7:
+                elif choice == 25:
+                    analyzer = Analyzer()
+                    analyzer.start()
+                    continue
+                elif choice > 25 or choice < 0 or choice == 7:
                     general_logger.warning("Invalid option %d" % choice)
                     continue
                 script = eval("Script%03d" % choice)(application)

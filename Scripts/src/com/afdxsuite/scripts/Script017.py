@@ -66,7 +66,10 @@ class Script017(Script):
             while count > 0:
                 self.__sendicmp(port, message, poll = False)
                 count -= 1
-            self.sendSNMP()
+
+            self.sendICMP(port, "ES Test ping")
+            # removed as per Fabienne's comments
+            # self.sendSNMP()
 
     def sequence4(self):
         self.captureForSequence(4)
@@ -82,7 +85,9 @@ class Script017(Script):
                 self.application.transmitter.transmit_packets([packet], 
                                                           self.network)
                 count -= 1
-            self.sendSNMP()
+            self.sendICMP(port, "ES Test ping")
+            # removed as per Fabienne's comments
+            # self.sendSNMP()
 
     def run(self):
         self.logger.info("Starting sequence 1")

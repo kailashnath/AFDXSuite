@@ -8,6 +8,7 @@ from com.afdxsuite.application.commands.RSET import RSET
 from com.afdxsuite.application.utilities import pollForResponse
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A
+from subprocess import call
 
 import os
 import sys
@@ -22,21 +23,34 @@ class ScriptReceiver(IReceiver):
     __lockOnCapture = False
     __captures = None
 
-    def __init__(self, scriptName):
+    def __init__(self, scriptName, network = NETWORK_A):
         self.__scriptName = scriptName
+        self.__network = network
+        self.__filter = get("RECEIVER_NETWORK_FILTER_" + network)
+
         print 'Initialising receiver for script : %s' % scriptName
 
     def start(self, seqno = 0):
 
-        if seqno > 0:
+        if seqno > 0 and self.__filename != None:
             self.stop()
-
+        # os.seteuid(os.geteuid())
         self.__captures = []
+
         if seqno > 0:
             filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
         else:
             filename = self.__scriptName + ".cap"
 
+        if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
+                os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
+
+        os.system("sudo sh /home/robuntu/kailash/github/AFDXSuite/" \
+                  "Scripts/start_capture.sh " +
+                   "\"" + CAPTURES_PARENT_DIRECTORY + "\" " + filename + \
+                   " \"" + self.__filter + "\" &")
+
+        time.sleep(1)
         self.__filename = filename
         self.__lockOnCapture = False
 
@@ -60,14 +74,12 @@ class ScriptReceiver(IReceiver):
         self.__filter = filterfunc
 
     def stop(self):
-
+        time.sleep(2)
+        os.system("sudo sh /home/robuntu/kailash/github/AFDXSuite/" \
+                  "Scripts/stop_capture.sh dumpcap")
+        """
         try:
             if self.__captures != None and len(self.__captures) > 0:
-
-                filename = self.__filename
-                if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
-                        os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
-                filename = CAPTURES_PARENT_DIRECTORY + "/" + filename
                 time.sleep(2)
                 self.__writer = PcapWriter(filename)
                 self.__lockOnCapture = True
@@ -82,6 +94,7 @@ class ScriptReceiver(IReceiver):
         finally:            
             self.__writer = None
             self.__captures = None
+        """
 
 class Script(object):
     __receiver = None
@@ -184,7 +197,8 @@ class Script(object):
     def getMIBGroup(self, group_name, extra_id = None):
         oid_lst = []
         for key in conf.mib.keys():
-            if group_name in key and len(key) > len(group_name) and "Group" not in key:
+            if group_name in key and len(key) > len(group_name) and \
+            "Group" not in key:
                 oid_value = conf.mib[key]
                 oid_lst.append(oid_value)
     

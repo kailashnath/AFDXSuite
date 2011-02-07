@@ -66,7 +66,13 @@ def iptoHexarray(ip_address):
     return "\\x%02X\\x%02X\\x%02X\\x%02X" % (ip_vals[0], ip_vals[1], \
                                              ip_vals[2], ip_vals[3])
 
-def pollForResponse(command, timeout = 5, logger = None):
+def pollForResponse(command, timeout = 2, logger = None):
+    time.sleep(2)
+    return True
+
+    # the below code is no more valid as we are not validating against
+    # any received packets. Hence commenting out the code
+    """
     global command_poller
 
     if command_poller == None:
@@ -83,6 +89,7 @@ def pollForResponse(command, timeout = 5, logger = None):
             return False
         timeout -= 1
         time.sleep(1)
+    """
 
 def buildBigMessage(port, message = "", offset_size = 0):
     mfs = port.max_frame_size

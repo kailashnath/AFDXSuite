@@ -32,9 +32,9 @@ class ReceiverThread(threading.Thread):
         try:
             filter_text = get("RECEIVER_NETWORK_FILTER_" + self.__network)
             while True:
-                sniff(iface = self.__iface, prn = self.callback,
-                      filter = filter_text, timeout = 10,
-                      store = 0)
+                #sniff(iface = self.__iface, prn = self.callback,
+                 #     filter = filter_text, timeout = 10,
+                  #    store = 0)
 
                 if self.__stop:
                     raise ThreadExit()

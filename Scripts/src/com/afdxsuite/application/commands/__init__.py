@@ -6,6 +6,9 @@ class Command(object):
     def getTESN(self):
         return testequipment_sequencer.getTESN()
 
+    def resetSN(self):
+        testequipment_sequencer.reset()
+
     def send(self):
         raise Exception("Method not implemented")
 
