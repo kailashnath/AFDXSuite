@@ -44,7 +44,7 @@ if __name__ == '__main__':
             script = None
             try:
                 choice = raw_input("Please enter the script number (1 - 24) or"\
-                                   " 0 to exit : ")
+                                   " 25 for Analyzer or 0 to exit : ")
                 if choice == "":
                     continue
 
@@ -68,6 +68,7 @@ if __name__ == '__main__':
                 general_logger.error("Could not execute the script. : %s" % \
                                      (str(ex)))
                 traceback.print_exc(file=sys.stdout)
+
     except KeyboardInterrupt:
         pass
     finally:
