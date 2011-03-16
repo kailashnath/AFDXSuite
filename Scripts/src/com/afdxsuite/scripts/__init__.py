@@ -45,8 +45,7 @@ class ScriptReceiver(IReceiver):
         if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
                 os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
 
-        os.system("sudo sh /home/robuntu/kailash/github/AFDXSuite/" \
-                  "Scripts/start_capture.sh " +
+        os.system("sudo sh start_capture.sh " +
                    "\"" + CAPTURES_PARENT_DIRECTORY + "\" " + filename + \
                    " \"" + self.__filter + "\" &")
 
@@ -75,8 +74,7 @@ class ScriptReceiver(IReceiver):
 
     def stop(self):
         time.sleep(2)
-        os.system("sudo sh /home/robuntu/kailash/github/AFDXSuite/" \
-                  "Scripts/stop_capture.sh dumpcap")
+        os.system("sudo sh stop_capture.sh dumpcap")
         """
         try:
             if self.__captures != None and len(self.__captures) > 0:
