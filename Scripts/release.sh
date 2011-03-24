@@ -1,4 +1,4 @@
-$MAJOR_VERSION=$1
+MAJOR_VERSION=$1
 version=$(date +$1.%m.%d)
 
 git diff
