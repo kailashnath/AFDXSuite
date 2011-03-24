@@ -14,7 +14,8 @@ class Script016(Script):
         self.application = application
         self.network = NETWORK_A
         super(Script016, self).__init__("ITR-ES-016")
-        self.input_ports = self.getPorts({}, ICD_INPUT_VL)
+        self.input_ports = self.getPorts({'network_id' : NETWORK_A},
+                                          ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
 
     def send_packet(self, packet):

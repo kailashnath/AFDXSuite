@@ -3,11 +3,13 @@ from com.afdxsuite.config.parsers import ICD_INPUT_VL
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.scapy import conf
 from com.afdxsuite.config import Factory
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script018(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = NETWORK_A
         super(Script018, self).__init__("ITR-ES-018")
         self.snmp_ports = self.getPorts({'udp_dst' : int(get("SNMP_UDP_PORT"))},
                                          ICD_INPUT_VL)

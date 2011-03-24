@@ -8,11 +8,13 @@ buildStaticMessage
 from com.afdxsuite.application.commands.EIPC import EIPC
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.application.commands.RRPC import RRPC
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script019(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = NETWORK_A
         super(Script019, self).__init__("ITR-ES-019", has_sequences = True)
         self.output_ports = self.getPorts({}, ICD_OUTPUT_VL)
         self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING},

@@ -1,5 +1,5 @@
 from com.afdxsuite.scripts import Script
-from com.afdxsuite.core.network import NETWORK_AB
+from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
 from com.afdxsuite.application.commands.RRPC import RRPC
 from com.afdxsuite.application.utilities import buildShortMessage,\
@@ -17,10 +17,9 @@ class Script006(Script):
 
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_AB
+        self.network = application.network
         super(Script006, self).__init__("ITR-ES-006", has_sequences = True)
-        self.input_ports = self.getPorts({'network_id' : 
-                                           self.network.split('&')}, 
+        self.input_ports = self.getPorts({'network_id' : NETWORK_A}, 
                                            ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
 
@@ -33,6 +32,8 @@ class Script006(Script):
         self.sendRSET()
         for port in self.input_ports:
             rrpc = RRPC( port)
+            if port.port_characteristic == PORT_SAP:
+                continue
 
             for count in range(0, 4):
                 message = "Message %d" % count

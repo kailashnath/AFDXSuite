@@ -9,7 +9,7 @@ class EIPC(Command):
         self.port = port
         super(EIPC, self).__init__()
 
-    def buildCommand(self, command = 'SEND', messagetype = 'S', message = ""):
+    def buildCommand(self, command = 'SEND', messagetype = 'U', message = ""):
         command = "%(tesn)sEIPC%(comport)s%(command)s"\
                     "%(messagetype)s%(message)s" % \
                     {'tesn' : i2h("%04X" % self.getTESN()),

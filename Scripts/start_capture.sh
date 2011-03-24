@@ -3,8 +3,9 @@
 OUTPUT_DIR=$1
 OUTPUT_FILENAME=$2
 CAPTURE_FILTER=$3
+NETWORK_IFACE=$4
 
 chmod 777 "$OUTPUT_DIR"
-dumpcap -f "$CAPTURE_FILTER" -M -w "$OUTPUT_DIR/$OUTPUT_FILENAME" 2> /dev/null &
+dumpcap -f "$CAPTURE_FILTER" -i "$NETWORK_IFACE" -M -w "$OUTPUT_DIR/$OUTPUT_FILENAME" 2> /dev/null &
 
 echo $! > "/tmp/pyid_$OUTPUT_FILENAME"

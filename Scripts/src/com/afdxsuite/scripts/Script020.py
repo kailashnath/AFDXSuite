@@ -3,13 +3,16 @@ from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_ICMP
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.application.utilities import buildFragmentedMessage
 from com.afdxsuite.config import Factory
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script020(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = NETWORK_A
         super(Script020, self).__init__('ITR-ES-020', has_sequences = True)
         self.input_ports = self.getPorts({'ip_frag_allowed' : True,
+                                          'network_id' : NETWORK_A,
                                           'port_characteristic' : \
                                           PORT_QUEUING}, ICD_INPUT_VL)
         self.icmp_ports  = self.getPorts({}, ICD_ICMP)

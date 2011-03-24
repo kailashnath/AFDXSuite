@@ -13,14 +13,16 @@ class Script010(Script):
 
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = application.network
         super(Script010, self).__init__("ITR-ES-010", has_sequences = True)
         self.input_ports = self.getPorts({'port_characteristic' : \
-                                          [PORT_SAMPLING, PORT_QUEUING]},
+                                          [PORT_SAMPLING, PORT_QUEUING],
+                                          'network_id' : NETWORK_A},
                                           ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
         self.output_ports = self.getPorts({'port_characteristic' : \
-                                          [PORT_SAMPLING, PORT_QUEUING]},
+                                          [PORT_SAMPLING, PORT_QUEUING],
+                                          'network_id' : NETWORK_A},
                                           ICD_OUTPUT_VL)
         self.output_ports = self.remove_common_ports(self.output_ports)
 

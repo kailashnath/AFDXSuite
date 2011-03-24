@@ -1,5 +1,5 @@
 from com.afdxsuite.scripts import Script
-from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB
+from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.config.parsers import ICD_OUTPUT_VL
 from com.afdxsuite.config.parsers.icdparser import PORT_QUEUING
 from com.afdxsuite.application.commands.EIPC import EIPC
@@ -12,9 +12,9 @@ class Script011(Script):
 
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = application.network
         super(Script011, self).__init__("ITR-ES-011")
-        self.output_ports = self.getPorts({'network_select' : NETWORK_AB,
+        self.output_ports = self.getPorts({'network_id' : NETWORK_A,
                                            'port_characteristic' : PORT_QUEUING},
                                           ICD_OUTPUT_VL)
         self.output_ports = self.remove_common_ports(self.output_ports)

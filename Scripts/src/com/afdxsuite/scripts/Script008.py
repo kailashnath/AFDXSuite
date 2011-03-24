@@ -1,4 +1,4 @@
-from com.afdxsuite.core.network import NETWORK_AB
+from com.afdxsuite.core.network import NETWORK_A
 from com.afdxsuite.config.parsers import ICD_ICMP, ICD_INPUT_VL
 from com.afdxsuite.scripts import Script
 from com.afdxsuite.application.utilities import buildMessage, pollForResponse,\
@@ -10,10 +10,10 @@ class Script008(Script):
 
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_AB
+        self.network = application.network
         super(Script008, self).__init__("ITR-ES-008", has_sequences = True)
-        self.icmp_ports = self.getPorts({}, ICD_ICMP)
-        self.input_port = self.getPorts({}, ICD_INPUT_VL)
+        self.icmp_ports = self.getPorts({'network_id' : NETWORK_A}, ICD_ICMP)
+        self.input_port = self.getPorts({'network_id' : NETWORK_A}, ICD_INPUT_VL)
         self.logger.info("Starting script ITR-ES-008")
         self.input_port = self.remove_common_ports(self.input_port)
 

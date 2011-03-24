@@ -2,11 +2,13 @@ from com.afdxsuite.scripts import Script
 from com.afdxsuite.config.parsers import ICD_ICMP
 from com.afdxsuite.application.utilities import buildStaticMessage
 from com.afdxsuite.application.properties import get
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script022(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = NETWORK_A
         super(Script022, self).__init__("ITR-ES-022", has_sequences = True)
         self.icmp_ports = self.getPorts({}, ICD_ICMP)
 

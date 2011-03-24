@@ -12,9 +12,9 @@ class Script012(Script):
 
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = application.network
         super(Script012, self).__init__("ITR-ES-012")
-        self.output_ports = self.getPorts({}, ICD_OUTPUT_VL)
+        self.output_ports = self.getPorts({'network_id' : NETWORK_A}, ICD_OUTPUT_VL)
         self.output_ports = self.remove_common_ports(self.output_ports)
 
     def run(self):

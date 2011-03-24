@@ -12,9 +12,10 @@ class Script009(Script):
 
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = application.network
         super(Script009, self).__init__("ITR-ES-009", has_sequences = True)
-        self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING},
+        self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING,
+                                          'network_id' : NETWORK_A},
                                           ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
 

@@ -5,6 +5,7 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.application.commands.RRPC import RRPC
 from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING, PORT_QUEUING
 from com.afdxsuite.application.utilities import pollForResponse
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script002(Script):
     application = None
@@ -13,7 +14,7 @@ class Script002(Script):
         self.application = application
         super(Script002, self).__init__("ITR-ES-002", has_sequences = True)
         self.network = application.network
-        self.input_ports = self.getPorts({'network_id' : self.network,
+        self.input_ports = self.getPorts({'network_id' : NETWORK_A,
                                           'port_characteristic' : \
                                           [PORT_SAMPLING, PORT_QUEUING]},
                                          ICD_INPUT_VL)

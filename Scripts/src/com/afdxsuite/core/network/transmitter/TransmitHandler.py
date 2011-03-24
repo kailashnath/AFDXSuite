@@ -4,6 +4,7 @@ from com.afdxsuite.core.network.scapy import Ether, sendp, IP, UDP, Raw, ICMP,\
     SNMPget
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.utils import SequenceHandler
+from com.afdxsuite.logger import general_logger
 
 class TransmitHandler(object):
     __network = None
@@ -142,20 +143,24 @@ class TransmitHandler(object):
             packet = self.__addPadding(packet)
             packets = []
 
-            if NETWORK_A in network:
-                packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
-                if send:
-                    sendp(packet, iface = get("NETWORK_INTERFACE_A"),
-                          verbose = False)
-                else:
-                    packets.append(packet)
-            if NETWORK_B in network:
-                packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
-                if send:
-                    sendp(packet, iface = get("NETWORK_INTERFACE_B"),
-                          verbose = False)
-                else:
-                    packets.append(packet)
+            try:
+                if NETWORK_A in network:
+                    packet[Ether].src = get("MAC_PREFIX_TX") + ":20"
+                    if send:
+                        sendp(packet, iface = get("NETWORK_INTERFACE_A"),
+                              verbose = False)
+                    else:
+                        packets.append(packet)
+    
+                if NETWORK_B in network:
+                    packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
+                    if send:
+                        sendp(packet, iface = get("NETWORK_INTERFACE_B"),
+                              verbose = False)
+                    else:
+                        packets.append(packet)
+            except Exception, ex:
+                general_logger.exception(str(ex))
             return packets
 
         self.__port = port

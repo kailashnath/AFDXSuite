@@ -10,7 +10,7 @@ class ESAP(Command):
         self.port = port
         super(ESAP, self).__init__()
 
-    def buildCommand(self, command = 'SEND', messagetype = 'S',  message = ""):
+    def buildCommand(self, command = 'SEND', messagetype = 'U',  message = ""):
         port = self.port
         command = "%(tesn)sESAP%(sapsrcport)s%(command)s%(commandtype)s"\
                         "%(message)s%(teip)s%(udpdst)s" % \

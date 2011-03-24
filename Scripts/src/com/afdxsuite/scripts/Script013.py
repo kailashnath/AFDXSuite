@@ -11,8 +11,9 @@ class Script013(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = application.network
         super(Script013, self).__init__("ITR-ES-013", has_sequences = True)
-        self.input_ports = self.getPorts({},
+        self.input_ports = self.getPorts({'network_id' : NETWORK_A},
                                          ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
         self.__sns = {}

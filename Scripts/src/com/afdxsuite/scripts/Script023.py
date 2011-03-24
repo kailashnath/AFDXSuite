@@ -6,6 +6,7 @@ from com.afdxsuite.application.utilities import getMIBOID, getAFDXEquipmentGroup
     getAFDXMACGroup, getAFDXIPGroup, getAFDXUDPGroup, getAFDXESFailureGroup,\
     buildShortMessage, getMIBOIDBySize
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
+from com.afdxsuite.core.network import NETWORK_A
 
 import random
 import copy
@@ -15,9 +16,11 @@ class Script023(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = NETWORK_A
         super(Script023, self).__init__("ITR-ES-023", has_sequences = True)
         self.sap_ports = self.getPorts({'port_characteristic' : PORT_SAP,
-                                        'udp_dst' : int(get('SNMP_UDP_PORT'))},
+                                        'udp_dst' : int(get('SNMP_UDP_PORT')),
+                                        'network_id' : NETWORK_A},
                                        ICD_INPUT_VL)
         self.input_ports = self.getPorts({}, ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)

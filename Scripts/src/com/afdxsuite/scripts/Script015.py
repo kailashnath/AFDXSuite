@@ -14,9 +14,11 @@ class Script015(Script):
     application = None
     def __init__(self, application):
         self.application = application
+        self.network = application.network
         super(Script015, self).__init__("ITR-ES-015", has_sequences = True)
         self.input_ports = self.getPorts({'port_characteristic' : \
-                                          PORT_QUEUING}, ICD_INPUT_VL)
+                                          PORT_QUEUING,
+                                          'network_id' : NETWORK_A}, ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
 
     def sendOnDisconnectedInterface(self, rx_port, tx_port):

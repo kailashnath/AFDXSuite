@@ -7,7 +7,7 @@ from com.afdxsuite.config import Factory
 from com.afdxsuite.application.commands.RSET import RSET
 from com.afdxsuite.application.utilities import pollForResponse
 from com.afdxsuite.application.properties import get
-from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A
+from com.afdxsuite.core.network import NETWORK_AB, NETWORK_A, NETWORK_B
 from subprocess import call
 
 import os
@@ -26,8 +26,6 @@ class ScriptReceiver(IReceiver):
     def __init__(self, scriptName, network = NETWORK_A):
         self.__scriptName = scriptName
         self.__network = network
-        self.__filter = get("RECEIVER_NETWORK_FILTER_" + network)
-
         print 'Initialising receiver for script : %s' % scriptName
 
     def start(self, seqno = 0):
@@ -38,16 +36,23 @@ class ScriptReceiver(IReceiver):
         self.__captures = []
 
         if seqno > 0:
-            filename = self.__scriptName + "_SEQ" + str(seqno) + ".cap"
+            filename = self.__scriptName + "_SEQ" + str(seqno)
         else:
-            filename = self.__scriptName + ".cap"
+            filename = self.__scriptName
 
         if os.path.exists(CAPTURES_PARENT_DIRECTORY + "/" + filename):
                 os.remove(CAPTURES_PARENT_DIRECTORY + "/" + filename)
 
-        os.system("sudo sh start_capture.sh " +
-                   "\"" + CAPTURES_PARENT_DIRECTORY + "\" " + filename + \
-                   " \"" + self.__filter + "\" &")
+        for ntwk in self.__network:
+            if ntwk not in (NETWORK_A, NETWORK_B):
+                continue
+            cmd = "sudo sh start_capture.sh \"%(directory)s\" %(filename)s.cap"\
+                      " \"%(filter)s\" \"%(iface)s\" &" % \
+                      { 'directory' : CAPTURES_PARENT_DIRECTORY,
+                        'filename'  : filename + "_" + ntwk,
+                        'filter'    : get("RECEIVER_NETWORK_FILTER_%s" % ntwk),
+                        'iface'     : get("NETWORK_INTERFACE_" + ntwk) }
+            os.system( cmd )
 
         time.sleep(1)
         self.__filename = filename
@@ -98,13 +103,12 @@ class Script(object):
     __receiver = None
     __scriptName = None
     logger = general_logger
-    network  = NETWORK_A
 
     def __init__(self, name, has_sequences = False):
         self.logger = \
         Logger(LOGGER_PARENT_DIRECTORY, logger_name = name).script_logger
         self.logger.info("Intialising the script " + name)
-        self.__receiver = ScriptReceiver(name)
+        self.__receiver = ScriptReceiver(name, NETWORK_AB)
 
         if not has_sequences:
             self.__receiver.start()

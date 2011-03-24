@@ -5,14 +5,16 @@ from com.afdxsuite.config.parsers.icdparser import PORT_SAMPLING, PORT_QUEUING
 from com.afdxsuite.application.utilities import pollForResponse, buildBigMessage
 from com.afdxsuite.application.commands.EIPC import EIPC
 from com.afdxsuite.application.commands.TCRQ import TCRQ
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script003(Script):
     application = None
 
     def __init__(self, application):
         self.application = application
+        self.network = application.network
         super(Script003, self).__init__("ITR-ES-003")
-        self.output_ports = self.getPorts({'network_id' : application.network,
+        self.output_ports = self.getPorts({'network_id' : NETWORK_A,
                                           'port_characteristic' : \
                                           [PORT_SAMPLING, PORT_QUEUING]},
                                          ICD_OUTPUT_VL)
@@ -35,7 +37,7 @@ class Script003(Script):
                                     message = buildBigMessage(port, message,
                                                 offset_size = offset_size))
             self.send(command, Factory.GET_TX_Port())
-            if not pollForResponse("EIPC", timeout = 10):
+            if not pollForResponse("EIPC", timeout = 2):
                 self.logger.error("The ES has not responded to EIPC")
 
         tcrq = TCRQ()

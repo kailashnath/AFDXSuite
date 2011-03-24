@@ -6,14 +6,16 @@ from com.afdxsuite.application.utilities import buildShortMessage,\
     pollForResponse
 from com.afdxsuite.config import Factory
 from com.afdxsuite.application.commands.TCRQ import TCRQ
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script004(Script):
     application = None
 
     def __init__(self, application):
         self.application = application
+        self.network = application.network
         super(Script004, self).__init__("ITR-ES-004")
-        self.output_ports = self.getPorts({'network_id' : self.network.split('&'),
+        self.output_ports = self.getPorts({'network_id' : NETWORK_A,
                                           'port_characteristic' : \
                                           [PORT_SAMPLING, PORT_QUEUING]},
                                          ICD_OUTPUT_VL)

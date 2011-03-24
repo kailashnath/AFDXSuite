@@ -14,9 +14,10 @@ class Script014(Script):
     application = None
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = application.network
         super(Script014, self).__init__("ITR-ES-014")
-        self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING},
+        self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING,
+                                          'network_id' : NETWORK_A},
                                           ICD_INPUT_VL)
         self.sn_vl = {}
         self.sns = [155, 0, 1, 2, 4, 4, 5, 4, 151, 153, 151, 255, 1, 255, 2,

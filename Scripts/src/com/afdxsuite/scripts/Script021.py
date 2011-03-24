@@ -12,10 +12,11 @@ class Script021(Script):
     
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_AB
+        self.network = application.network
         super(Script021, self).__init__("ITR-ES-021", has_sequences = True)
         self.input_ports = self.getPorts({'port_characteristic' : PORT_QUEUING,
-                                          'ip_frag_allowed' : True},
+                                          'ip_frag_allowed' : True,
+                                          'network_id' : NETWORK_A},
                                          ICD_INPUT_VL)
         self.input_ports = self.remove_common_ports(self.input_ports)
 

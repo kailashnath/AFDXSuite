@@ -4,10 +4,12 @@ from com.afdxsuite.config.parsers import ICD_INPUT_VL
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.config import Factory
 from com.afdxsuite.application.utilities import getMIBOIDBySize, getMIBOID
+from com.afdxsuite.core.network import NETWORK_A
 
 class Script024(Script):
     def __init__(self, application):
         self.application = application
+        self.network = NETWORK_A
         super(Script024, self).__init__("ITR-ES-024")
         self.snmp_ports = self.getPorts({'port_characteristic' : PORT_SAP,
                                          'udp_dst' : int(get('SNMP_UDP_PORT'))},
