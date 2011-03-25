@@ -12,7 +12,7 @@ class Script008(Script):
         self.application = application
         self.network = application.network
         super(Script008, self).__init__("ITR-ES-008", has_sequences = True)
-        self.icmp_ports = self.getPorts({'network_id' : NETWORK_A}, ICD_ICMP)
+        self.icmp_ports = self.getPorts({}, ICD_ICMP)
         self.input_port = self.getPorts({'network_id' : NETWORK_A}, ICD_INPUT_VL)
         self.logger.info("Starting script ITR-ES-008")
         self.input_port = self.remove_common_ports(self.input_port)

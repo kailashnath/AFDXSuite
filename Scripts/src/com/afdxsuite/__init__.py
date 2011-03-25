@@ -32,8 +32,6 @@ from com.afdxsuite.logger import general_logger
 
 import sys, traceback
 
-ANALYSIS_FILENAME = "/home/robuntu/Releases/7jan/captures/07 Jan 2011/14_26/ITR-ES-016.cap"
-
 if __name__ == '__main__':
     application = Application(NETWORK_AB)
     try:
