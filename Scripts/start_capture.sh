@@ -7,5 +7,3 @@ NETWORK_IFACE=$4
 
 chmod 777 "$OUTPUT_DIR"
 dumpcap -f "$CAPTURE_FILTER" -i "$NETWORK_IFACE" -M -w "$OUTPUT_DIR/$OUTPUT_FILENAME" 2> /dev/null &
-
-echo $! > "/tmp/pyid_$OUTPUT_FILENAME"
