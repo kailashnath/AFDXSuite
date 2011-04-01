@@ -2,6 +2,9 @@
 class SequenceHandler(object):
     
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.__current_sn = {}
         self.__ipid = 1
 

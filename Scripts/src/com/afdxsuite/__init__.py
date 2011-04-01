@@ -41,6 +41,7 @@ if __name__ == '__main__':
         while True:
             script = None
             try:
+                application.transmitter.reset()
                 choice = raw_input("Please enter the script number (1 - 24) or"\
                                    " 25 for Analyzer or 0 to exit : ")
                 if choice == "":

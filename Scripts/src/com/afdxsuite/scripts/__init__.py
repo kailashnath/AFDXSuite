@@ -114,6 +114,7 @@ class Script(object):
             self.__receiver.start()
 
         self.__scriptName = name
+
         Receiver.register(self.__receiver, NETWORK_AB)
 
     def captureForSequence(self, seqNo):

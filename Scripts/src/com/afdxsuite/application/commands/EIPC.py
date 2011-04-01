@@ -17,4 +17,5 @@ class EIPC(Command):
                      'command' : command,
                      'messagetype' : messagetype,
                      'message' : message}
+
         return command.decode('string_escape')

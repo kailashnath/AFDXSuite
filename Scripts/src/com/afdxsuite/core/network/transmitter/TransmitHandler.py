@@ -13,6 +13,9 @@ class TransmitHandler(object):
         self.__network = network
         self._sn_handler = SequenceHandler()
 
+    def reset(self):
+        self._sn_handler.reset()
+
     def __addEthernetDetails(self):
         eth = Ether()
         src_mac_padding = '%04x' % self.__port.vl_id
