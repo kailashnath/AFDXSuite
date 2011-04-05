@@ -6,6 +6,8 @@ from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network.utils import SequenceHandler
 from com.afdxsuite.logger import general_logger
 
+import time
+
 class TransmitHandler(object):
     __network = None
 
@@ -198,6 +200,7 @@ class TransmitHandler(object):
                 packet[Ether].src = get("MAC_PREFIX_TX") + ":40"
                 sendp(packet, iface = get("NETWORK_INTERFACE_B"),
                       verbose = False)
+	    time.sleep( 0.6 )
 
     def fragment(self, packet):
 
