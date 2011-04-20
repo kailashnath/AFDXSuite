@@ -1,5 +1,5 @@
 from com.afdxsuite.scripts import Script
-from com.afdxsuite.core.network import NETWORK_A
+from com.afdxsuite.core.network import NETWORK_A, NETWORK_AB
 from com.afdxsuite.config.parsers import ICD_INPUT_VL
 from com.afdxsuite.application.commands.ERPQ import ERPQ
 from com.afdxsuite.config import Factory
@@ -12,7 +12,7 @@ class Script016(Script):
     application = None
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = NETWORK_AB
         super(Script016, self).__init__("ITR-ES-016")
         self.input_ports = self.getPorts({'network_id' : NETWORK_A},
                                           ICD_INPUT_VL)

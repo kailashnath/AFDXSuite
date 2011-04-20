@@ -1,6 +1,7 @@
 from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_OUTPUT_VL, ICD_ICMP
 from com.afdxsuite.config.parsers.icdparser import CONFIG_ENTRIES, PORT_SAMPLING
 from com.afdxsuite.application.properties import get
+from com.afdxsuite.core.network import NETWORK_B
 
 PROCESSED_PORTS = {}
 
@@ -139,7 +140,8 @@ def GET_TX_Port():
     def filter(port):
 
         if str(port.vl_id) == get('TE_TX_VL') and \
-        port.port_characteristic != PORT_SAMPLING:
+        port.port_characteristic != PORT_SAMPLING and \
+        port.network_id != NETWORK_B:
             port.ip_dst = get('TR_IP')
 
             return True

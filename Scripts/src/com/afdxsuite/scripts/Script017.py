@@ -22,6 +22,9 @@ class Script017(Script):
                                                     self.icmp_ports)
 
     def sendSNMP(self):
+        if len(self.snmp_ports) == 0:
+            self.logger.info("Skipping sending SNMP as no SNMP ports found")
+            return
         snmp_errcode = conf.mib['afdxICMPInErrors'] + ".0"
         snmp_port = self.snmp_ports[0]
         outport = Factory.WRITE(snmp_port.RX_AFDX_port_id, "")

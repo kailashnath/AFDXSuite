@@ -170,13 +170,15 @@ class Script(object):
 
         for port in ports:
             outport = Factory.WRITE(port.RX_AFDX_port_id, payload)
-
+            print 'Sending on %s' % self.network
             self.application.transmitter.transmit(outport, self.network)
 
     def sendRSET(self, poll = True):
         rset = RSET()
         self.logger.info("Sent an RSET command")
+
         self.send(rset.buildCommand(), Factory.GET_TX_Port())
+        time.sleep(1)
         if not poll:
             return
 
@@ -184,7 +186,6 @@ class Script(object):
             pass
         #   removed as per fabienne's request on Jan 18
         #   self.logger.warn("The ES has not responded to RSET")
-
 
     def sendICMP(self, port, message, poll = True):
         port = Factory.WRITE_ICMP(port.rx_vl_id, message)

@@ -1,8 +1,8 @@
 from com.afdxsuite.logger import initializeGeneralLogger
 
-import ConfigParser
 import os
 import time
+import ConfigParser
 
 PARENT_PATH = "./" 
 CAPTURES_PARENT_DIRECTORY = PARENT_PATH + "captures/"
@@ -56,3 +56,4 @@ class Application(object):
     def close(self):
         general_logger.info("Terminating the application")
         self.receiver.stop()
+

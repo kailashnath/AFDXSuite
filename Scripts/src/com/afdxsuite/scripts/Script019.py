@@ -25,6 +25,9 @@ class Script019(Script):
         self.input_ports = self.remove_common_ports(self.input_ports)
 
     def sendSNMP(self, snmp_port):
+        if snmp_port == None:
+            self.logger.info("Skipping sending SNMP as no port found")
+            return
         snmp_errcode = conf.mib['afdxOutLackOfBuffer'] + ".0"
         outport = Factory.WRITE(snmp_port.RX_AFDX_port_id, "")
         setattr(outport, 'oids', [snmp_errcode])
@@ -48,12 +51,16 @@ class Script019(Script):
         self.captureForSequence(1)
         self.sendRSET()
 
-        if len(self.output_ports) == 0 or len(self.snmp_ports) == 0:
+        if len(self.output_ports) == 0: 
             self.logger.error("There are no ports in the ICD satisfying the "\
                               "scripts criteria")
             return
         port = self.output_ports[0]
-        snmp_port = self.snmp_ports[0]
+        if len(self.snmp_ports) > 0:
+            snmp_port = self.snmp_ports[0]
+        else:
+            snmp_port = None
+
         self.doOperation(port, snmp_port)
         
     def sequence2(self):
@@ -70,7 +77,10 @@ class Script019(Script):
             return
 
         self.sendRSET()
-        snmp_port = self.snmp_ports[0]
+        if len(self.snmp_ports) > 0:
+            snmp_port = self.snmp_ports[0]
+        else:
+            snmp_port = None
         self.doOperation(seq_port, snmp_port)
 
     def sequence3(self):
