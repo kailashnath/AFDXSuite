@@ -156,7 +156,8 @@ class Script(object):
                 val = port.udp_src
             elif hasattr(port, 'udp_dst'):
                 val = port.udp_dst
-            if val in (int(get("TE_UDP")), int(get("SNMP_UDP_PORT"))) or \
+            if val in (int(get("TE_UDP")), int(get("SNMP_UDP_PORT")), 
+                       int(get("SNMP_TRAP_PORT"))) or \
             (hasattr(port, 'vl_id') and \
              int(port.vl_id) in (int(get("TE_TX_VL")),int(get("TE_RX_VL")))):
                 continue
