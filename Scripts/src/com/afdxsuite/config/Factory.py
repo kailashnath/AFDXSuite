@@ -1,5 +1,8 @@
-from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_OUTPUT_VL, ICD_ICMP
-from com.afdxsuite.config.parsers.icdparser import CONFIG_ENTRIES, PORT_SAMPLING
+from com.afdxsuite.config.parsers import ICD_INPUT_VL, ICD_OUTPUT_VL, \
+                                            ICD_ICMP 
+from com.afdxsuite.config.parsers.icdparser import CONFIG_ENTRIES, \
+                                                    PORT_SAMPLING, \
+                                                    ICD_AFDX_INPUT_VL
 from com.afdxsuite.application.properties import get
 from com.afdxsuite.core.network import NETWORK_B
 
@@ -161,6 +164,17 @@ def GET_Ports(filter, type):
             ports.append(entry)
 
     return ports
+
+def GET_SNMP_DummyPort():
+    dummy_data = "AFDX_INPUT_VL;port1;100;10;;A;BP;35854;VL_TestSCI_NMF_ADIS_SwitchN;A&B;128;8192;Active;yes;65500;26038;SNMP;SAP;SAP;yes;10.3.49.3;161;8192;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
+    port = ICD_AFDX_INPUT_VL(dummy_data.split(';'))
+    CONFIG_ENTRIES[ICD_INPUT_VL].append(port)
+    return port
+
+def REM_Port(port, type = ICD_INPUT_VL):
+    global CONFIG_ENTRIES
+    CONFIG_ENTRIES[type].remove(port)
+
 
 def RESET():
     global PROCESSED_PORTS

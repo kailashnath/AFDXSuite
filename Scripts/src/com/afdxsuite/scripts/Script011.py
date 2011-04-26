@@ -49,7 +49,7 @@ class Script011(Script):
         pollForResponse('EIPC')
 
         tcrq = TCRQ()
-        self.send(tcrq.buildCommand(520), Factory.GET_TX_Port())
+        self.send(tcrq.buildCommand(257), Factory.GET_TX_Port())
         self.logger.info("Sending a TCRQ command.")
         pollForResponse('TCRQ')
         raw_input("Press enter/return key to continue......")
