@@ -166,7 +166,7 @@ def GET_Ports(filter, type):
     return ports
 
 def GET_SNMP_DummyPort():
-    dummy_data = "AFDX_INPUT_VL;port1;100;10;;A;BP;35854;VL_TestSCI_NMF_ADIS_SwitchN;A&B;128;8192;Active;yes;65500;26038;SNMP;SAP;SAP;yes;10.3.49.3;161;8192;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
+    dummy_data = "AFDX_INPUT_VL;port1;100;10;;A;BP;35854;VL_TestSCI_NMF_ADIS_SwitchN;A&B;128;8192;Active;yes;65500;26038;SNMP;SAP;SAP;yes;%s;161;8192;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" % (get('TR_IP'))
     port = ICD_AFDX_INPUT_VL(dummy_data.split(';'))
     CONFIG_ENTRIES[ICD_INPUT_VL].append(port)
     return port
