@@ -41,13 +41,13 @@ class Script024(Script):
                 oids_8kb = getMIBOIDBySize(452)
                 self.logger.info("Sending an SNMP get request")
                 self.sendSNMP(rxPort, [oid_1])
-                self.logger.info("Sending an SNMP get-next request of " \
+                self.logger.info("Sending an SNMP get request of " \
                                     " size ~4Ko")
-                self.sendSNMP(rxPort, oids_4kb, 1)
-                self.logger.info("Sending an SNMP get-next request of " \
+                self.sendSNMP(rxPort, oids_4kb)
+                self.logger.info("Sending an SNMP get request of " \
                                     "size ~8Ko")
-                self.sendSNMP(rxPort, oids_8kb, 1)
+                self.sendSNMP(rxPort, oids_8kb)
 
         if get('SNMP_TRAPS_ENABLED').lower() == 'true':
-                self.logger.info("Listening for traps : 10 seconds to halt")
+                self.logger.info("Listening for traps. Duration : 10 seconds")
                 time.sleep(10)

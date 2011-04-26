@@ -52,6 +52,7 @@ class ScriptReceiver(IReceiver):
                         'filename'  : filename + "_" + ntwk,
                         'filter'    : get("RECEIVER_NETWORK_FILTER_%s" % ntwk),
                         'iface'     : get("NETWORK_INTERFACE_" + ntwk) }
+            print 'Executing : %s' % cmd
             os.system( cmd )
 
         time.sleep(1)
@@ -79,7 +80,8 @@ class ScriptReceiver(IReceiver):
 
     def stop(self):
         time.sleep(2)
-        os.system("sudo sh stop_capture.sh dumpcap")
+        os.system("sudo sh stop_capture.sh dumpcap \"/%s\"" % \
+                    CAPTURES_PARENT_DIRECTORY.split('/')[1])
         """
         try:
             if self.__captures != None and len(self.__captures) > 0:
