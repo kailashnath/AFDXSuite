@@ -173,7 +173,6 @@ class Script(object):
 
         for port in ports:
             outport = Factory.WRITE(port.RX_AFDX_port_id, payload)
-            print 'Sending on %s' % self.network
             self.application.transmitter.transmit(outport, self.network)
 
     def sendRSET(self, poll = True):
