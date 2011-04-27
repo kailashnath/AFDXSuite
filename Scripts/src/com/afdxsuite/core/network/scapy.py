@@ -9352,7 +9352,6 @@ class BERcodec_SNMP_PDU_TRAPv2(BERcodec_SEQUENCE):
     tag = ASN1_Class_SNMP.PDU_TRAPv2
 
 
-
 ######[ ASN1 fields ]######
 
 class ASN1F_SNMP_PDU_GET(ASN1F_SEQUENCE):

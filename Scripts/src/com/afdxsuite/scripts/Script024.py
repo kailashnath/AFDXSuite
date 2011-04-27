@@ -11,7 +11,7 @@ import time
 class Script024(Script):
     def __init__(self, application):
         self.application = application
-        self.network = NETWORK_A
+        self.network = application.network
         super(Script024, self).__init__("ITR-ES-024")
         self.snmp_ports = self.getPorts({'port_characteristic' : PORT_SAP,
                                          'udp_dst' : int(get('SNMP_UDP_PORT'))},
@@ -34,7 +34,7 @@ class Script024(Script):
 
         if len(self.snmp_ports) == 0:
             self.logger.error("The ICD has no ports satisfying the sequence" \
-                              " criteria. Skipping sending SNMP requests")
+                              " criteria. Hence sending from a dummy SNMP port")
             dummy_port = (Factory.GET_SNMP_DummyPort(),)
             self.snmp_ports = dummy_port
 
@@ -46,7 +46,7 @@ class Script024(Script):
             self.logger.info("Sending an SNMP get request")
             self.sendSNMP(rxPort, [oid_1])
             self.logger.info("Sending an SNMP get request of " \
-                                " size ~4Ko")
+                                "size ~4Ko")
             self.sendSNMP(rxPort, oids_4kb)
             self.logger.info("Sending an SNMP get request of " \
                                 "size ~8Ko")
