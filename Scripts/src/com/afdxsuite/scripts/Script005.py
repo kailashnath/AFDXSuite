@@ -33,8 +33,8 @@ class Script005(Script):
                 setattr(port, "ip_dst", get("TE_IP"))
                 setattr(port, "udp_dst", int(get("TE_UDP")))
             else:
-                cmd = EIPC(port)
-
+                #cmd = EIPC(port)
+                cmd = ESAP(port)
             command_size = cmd.command_size
             message = "Short message"
             messages = []

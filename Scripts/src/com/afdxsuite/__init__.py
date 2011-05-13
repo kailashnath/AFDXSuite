@@ -25,7 +25,6 @@ from com.afdxsuite.scripts.Script023 import Script023
 from com.afdxsuite.scripts.Script024 import Script024
 
 from com.afdxsuite.application.analyzer.CaptureAnalyzer import Analyzer
-
 import time
 
 from com.afdxsuite.logger import general_logger
